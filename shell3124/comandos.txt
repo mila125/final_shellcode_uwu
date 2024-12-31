@@ -1,0 +1,15 @@
+
+"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
+
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat"
+
+"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\bin\Hostx64\x64\cl.exe" /c /FA /GS- /I "C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um" c-shellcode.cpp
+
+"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\bin\Hostx64\x64\ml64.exe" c-shellcode.asm /link /entry:AlignRSP
+
+
+
+
+
+
+
