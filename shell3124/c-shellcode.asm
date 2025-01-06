@@ -47,26 +47,33 @@ AlignRSP PROC
     ret ; Return to caller
 AlignRSP ENDP
 
-user32_dll_name$ = 32
-message_box_name$ = 48
-load_lib_name$ = 64
-get_proc_name$ = 80
-msg_title$ = 96
-kernel32_dll_name$ = 112
-msg_content$ = 144
-base$ = 176
-load_lib$ = 184
-get_proc$ = 192
-_MessageBoxW$ = 200
-_LoadLibraryA$ = 208
-u32_dll$ = 216
-_GetProcAddress$ = 224
+rf_name$ = 64
+fileName$ = 80
+user32_dll_name$ = 96
+cf_name$ = 112
+message_box_name$ = 128
+load_lib_name$ = 144
+kr32_dll_name$ = 160
+get_proc_name$ = 176
+msg_title$ = 192
+kernel32_dll_name$ = 208
+msg_content$ = 240
+base$ = 272
+_GetProcAddress$ = 280
+load_lib$ = 288
+get_proc$ = 296
+_LoadLibraryA$ = 304
+k32_dll$ = 312
+_MessageBoxW$ = 320
+_CreateFileA$ = 328
+_ReadFile$ = 336
+u32_dll$ = 344
 main	PROC
-; File C:\Users\6lady\source\repos\shell3124\shell3124\c-shellcode.cpp
-; Line 14
-$LN7:
-	sub	rsp, 248				; 000000f8H
-; Line 16
+; File C:\Users\6lady\source\shel0101\shell3124\c-shellcode.cpp
+; Line 13
+$LN9:
+	sub	rsp, 360				; 00000168H
+; Line 15
 	mov	eax, 107				; 0000006bH
 	mov	WORD PTR kernel32_dll_name$[rsp], ax
 	mov	eax, 101				; 00000065H
@@ -93,7 +100,7 @@ $LN7:
 	mov	WORD PTR kernel32_dll_name$[rsp+22], ax
 	xor	eax, eax
 	mov	WORD PTR kernel32_dll_name$[rsp+24], ax
-; Line 17
+; Line 16
 	mov	BYTE PTR load_lib_name$[rsp], 76	; 0000004cH
 	mov	BYTE PTR load_lib_name$[rsp+1], 111	; 0000006fH
 	mov	BYTE PTR load_lib_name$[rsp+2], 97	; 00000061H
@@ -107,7 +114,7 @@ $LN7:
 	mov	BYTE PTR load_lib_name$[rsp+10], 121	; 00000079H
 	mov	BYTE PTR load_lib_name$[rsp+11], 65	; 00000041H
 	mov	BYTE PTR load_lib_name$[rsp+12], 0
-; Line 18
+; Line 17
 	mov	BYTE PTR get_proc_name$[rsp], 71	; 00000047H
 	mov	BYTE PTR get_proc_name$[rsp+1], 101	; 00000065H
 	mov	BYTE PTR get_proc_name$[rsp+2], 116	; 00000074H
@@ -123,6 +130,20 @@ $LN7:
 	mov	BYTE PTR get_proc_name$[rsp+12], 115	; 00000073H
 	mov	BYTE PTR get_proc_name$[rsp+13], 115	; 00000073H
 	mov	BYTE PTR get_proc_name$[rsp+14], 0
+; Line 18
+	mov	BYTE PTR kr32_dll_name$[rsp], 107	; 0000006bH
+	mov	BYTE PTR kr32_dll_name$[rsp+1], 101	; 00000065H
+	mov	BYTE PTR kr32_dll_name$[rsp+2], 114	; 00000072H
+	mov	BYTE PTR kr32_dll_name$[rsp+3], 110	; 0000006eH
+	mov	BYTE PTR kr32_dll_name$[rsp+4], 101	; 00000065H
+	mov	BYTE PTR kr32_dll_name$[rsp+5], 108	; 0000006cH
+	mov	BYTE PTR kr32_dll_name$[rsp+6], 51	; 00000033H
+	mov	BYTE PTR kr32_dll_name$[rsp+7], 50	; 00000032H
+	mov	BYTE PTR kr32_dll_name$[rsp+8], 46	; 0000002eH
+	mov	BYTE PTR kr32_dll_name$[rsp+9], 100	; 00000064H
+	mov	BYTE PTR kr32_dll_name$[rsp+10], 108	; 0000006cH
+	mov	BYTE PTR kr32_dll_name$[rsp+11], 108	; 0000006cH
+	mov	BYTE PTR kr32_dll_name$[rsp+12], 0
 ; Line 19
 	mov	BYTE PTR user32_dll_name$[rsp], 117	; 00000075H
 	mov	BYTE PTR user32_dll_name$[rsp+1], 115	; 00000073H
@@ -148,7 +169,30 @@ $LN7:
 	mov	BYTE PTR message_box_name$[rsp+9], 120	; 00000078H
 	mov	BYTE PTR message_box_name$[rsp+10], 87	; 00000057H
 	mov	BYTE PTR message_box_name$[rsp+11], 0
-; Line 23
+; Line 21
+	mov	BYTE PTR cf_name$[rsp], 67		; 00000043H
+	mov	BYTE PTR cf_name$[rsp+1], 114		; 00000072H
+	mov	BYTE PTR cf_name$[rsp+2], 101		; 00000065H
+	mov	BYTE PTR cf_name$[rsp+3], 97		; 00000061H
+	mov	BYTE PTR cf_name$[rsp+4], 116		; 00000074H
+	mov	BYTE PTR cf_name$[rsp+5], 101		; 00000065H
+	mov	BYTE PTR cf_name$[rsp+6], 70		; 00000046H
+	mov	BYTE PTR cf_name$[rsp+7], 105		; 00000069H
+	mov	BYTE PTR cf_name$[rsp+8], 108		; 0000006cH
+	mov	BYTE PTR cf_name$[rsp+9], 101		; 00000065H
+	mov	BYTE PTR cf_name$[rsp+10], 65		; 00000041H
+	mov	BYTE PTR cf_name$[rsp+11], 0
+; Line 22
+	mov	BYTE PTR rf_name$[rsp], 82		; 00000052H
+	mov	BYTE PTR rf_name$[rsp+1], 101		; 00000065H
+	mov	BYTE PTR rf_name$[rsp+2], 97		; 00000061H
+	mov	BYTE PTR rf_name$[rsp+3], 100		; 00000064H
+	mov	BYTE PTR rf_name$[rsp+4], 70		; 00000046H
+	mov	BYTE PTR rf_name$[rsp+5], 105		; 00000069H
+	mov	BYTE PTR rf_name$[rsp+6], 108		; 0000006cH
+	mov	BYTE PTR rf_name$[rsp+7], 101		; 00000065H
+	mov	BYTE PTR rf_name$[rsp+8], 0
+; Line 24
 	mov	eax, 72					; 00000048H
 	mov	WORD PTR msg_content$[rsp], ax
 	mov	eax, 101				; 00000065H
@@ -175,7 +219,7 @@ $LN7:
 	mov	WORD PTR msg_content$[rsp+22], ax
 	xor	eax, eax
 	mov	WORD PTR msg_content$[rsp+24], ax
-; Line 24
+; Line 25
 	mov	eax, 68					; 00000044H
 	mov	WORD PTR msg_title$[rsp], ax
 	mov	eax, 101				; 00000065H
@@ -188,73 +232,119 @@ $LN7:
 	mov	WORD PTR msg_title$[rsp+8], ax
 	xor	eax, eax
 	mov	WORD PTR msg_title$[rsp+10], ax
-; Line 27
+; Line 26
+	mov	BYTE PTR fileName$[rsp], 68		; 00000044H
+	mov	BYTE PTR fileName$[rsp+1], 101		; 00000065H
+	mov	BYTE PTR fileName$[rsp+2], 114		; 00000072H
+	mov	BYTE PTR fileName$[rsp+3], 109		; 0000006dH
+	mov	BYTE PTR fileName$[rsp+4], 111		; 0000006fH
+	mov	BYTE PTR fileName$[rsp+5], 46		; 0000002eH
+	mov	BYTE PTR fileName$[rsp+6], 116		; 00000074H
+	mov	BYTE PTR fileName$[rsp+7], 120		; 00000078H
+	mov	BYTE PTR fileName$[rsp+8], 116		; 00000074H
+	mov	BYTE PTR fileName$[rsp+9], 0
+; Line 30
 	lea	rcx, QWORD PTR kernel32_dll_name$[rsp]
 	call	?get_module_by_name@@YAPEAXPEA_W@Z	; get_module_by_name
 	mov	QWORD PTR base$[rsp], rax
-; Line 28
+; Line 31
 	cmp	QWORD PTR base$[rsp], 0
 	jne	SHORT $LN2@main
-; Line 29
+; Line 32
 	mov	eax, 1
 	jmp	$LN1@main
 $LN2@main:
-; Line 33
+; Line 36
 	lea	rdx, QWORD PTR load_lib_name$[rsp]
 	mov	rcx, QWORD PTR base$[rsp]
 	call	?get_func_by_name@@YAPEAXPEAXPEAD@Z	; get_func_by_name
 	mov	QWORD PTR load_lib$[rsp], rax
-; Line 34
+; Line 37
 	cmp	QWORD PTR load_lib$[rsp], 0
 	jne	SHORT $LN3@main
-; Line 35
+; Line 38
 	mov	eax, 2
 	jmp	$LN1@main
 $LN3@main:
-; Line 39
+; Line 42
 	lea	rdx, QWORD PTR get_proc_name$[rsp]
 	mov	rcx, QWORD PTR base$[rsp]
 	call	?get_func_by_name@@YAPEAXPEAXPEAD@Z	; get_func_by_name
 	mov	QWORD PTR get_proc$[rsp], rax
-; Line 40
+; Line 43
 	cmp	QWORD PTR get_proc$[rsp], 0
 	jne	SHORT $LN4@main
-; Line 41
+; Line 44
 	mov	eax, 3
-	jmp	SHORT $LN1@main
+	jmp	$LN1@main
 $LN4@main:
-; Line 45
+; Line 48
 	mov	rax, QWORD PTR load_lib$[rsp]
 	mov	QWORD PTR _LoadLibraryA$[rsp], rax
-; Line 47
+; Line 50
 	mov	rax, QWORD PTR get_proc$[rsp]
 	mov	QWORD PTR _GetProcAddress$[rsp], rax
-; Line 50
+; Line 53
 	lea	rcx, QWORD PTR user32_dll_name$[rsp]
 	call	QWORD PTR _LoadLibraryA$[rsp]
 	mov	QWORD PTR u32_dll$[rsp], rax
-; Line 57
+; Line 55
+	lea	rcx, QWORD PTR kr32_dll_name$[rsp]
+	call	QWORD PTR _LoadLibraryA$[rsp]
+	mov	QWORD PTR k32_dll$[rsp], rax
+; Line 65
+	lea	rdx, QWORD PTR cf_name$[rsp]
+	mov	rcx, QWORD PTR k32_dll$[rsp]
+	call	QWORD PTR _GetProcAddress$[rsp]
+	mov	QWORD PTR _CreateFileA$[rsp], rax
+; Line 75
+	cmp	QWORD PTR _CreateFileA$[rsp], -1
+	jne	SHORT $LN5@main
+	mov	eax, 3
+	jmp	$LN1@main
+$LN5@main:
+; Line 84
+	lea	rdx, QWORD PTR rf_name$[rsp]
+	mov	rcx, QWORD PTR k32_dll$[rsp]
+	call	QWORD PTR _GetProcAddress$[rsp]
+	mov	QWORD PTR _ReadFile$[rsp], rax
+; Line 92
+	cmp	QWORD PTR _ReadFile$[rsp], 0
+	jne	SHORT $LN6@main
+	mov	eax, 4
+	jmp	SHORT $LN1@main
+$LN6@main:
+; Line 99
 	lea	rdx, QWORD PTR message_box_name$[rsp]
 	mov	rcx, QWORD PTR u32_dll$[rsp]
 	call	QWORD PTR _GetProcAddress$[rsp]
 	mov	QWORD PTR _MessageBoxW$[rsp], rax
-; Line 63
+; Line 105
 	cmp	QWORD PTR _MessageBoxW$[rsp], 0
-	jne	SHORT $LN5@main
-	mov	eax, 4
+	jne	SHORT $LN7@main
+	mov	eax, 5
 	jmp	SHORT $LN1@main
-$LN5@main:
-; Line 67
+$LN7@main:
+; Line 108
 	xor	r9d, r9d
 	lea	r8, QWORD PTR msg_title$[rsp]
 	lea	rdx, QWORD PTR msg_content$[rsp]
 	xor	ecx, ecx
 	call	QWORD PTR _MessageBoxW$[rsp]
-; Line 69
+; Line 110
+	mov	QWORD PTR [rsp+48], 0
+	mov	DWORD PTR [rsp+40], 128			; 00000080H
+	mov	DWORD PTR [rsp+32], 2
+	xor	r9d, r9d
+	xor	r8d, r8d
+	mov	edx, 1073741824				; 40000000H
+	lea	rcx, QWORD PTR fileName$[rsp]
+	call	QWORD PTR _CreateFileA$[rsp]
+; Line 117
 	xor	eax, eax
 $LN1@main:
-; Line 70
-	add	rsp, 248				; 000000f8H
+; Line 118
+	add	rsp, 360				; 00000168H
 	ret	0
 main	ENDP
 _TEXT	ENDS
@@ -279,7 +369,7 @@ funcRVA$6 = 96
 module$ = 128
 func_name$ = 136
 ?get_func_by_name@@YAPEAXPEAXPEAD@Z PROC		; get_func_by_name, COMDAT
-; File C:\Users\6lady\source\repos\shell3124\shell3124\peb-lookup.h
+; File C:\Users\6lady\source\shel0101\shell3124\peb-lookup.h
 ; Line 104
 $LN13:
 	mov	QWORD PTR [rsp+16], rdx
@@ -479,7 +569,7 @@ Flink$ = 64
 list$ = 72
 module_name$ = 128
 ?get_module_by_name@@YAPEAXPEA_W@Z PROC			; get_module_by_name, COMDAT
-; File C:\Users\6lady\source\repos\shell3124\shell3124\peb-lookup.h
+; File C:\Users\6lady\source\shel0101\shell3124\peb-lookup.h
 ; Line 69
 $LN16:
 	mov	QWORD PTR [rsp+8], rcx
@@ -489,7 +579,7 @@ $LN16:
 ; Line 70
 	mov	QWORD PTR peb$[rsp], 0
 ; Line 72
-	mov rax, QWORD PTR gs:[96]
+	mov	rax, QWORD PTR gs:[96]
 	mov	QWORD PTR peb$[rsp], rax
 ; Line 76
 	mov	rax, QWORD PTR peb$[rsp]
