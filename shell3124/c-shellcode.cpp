@@ -20,10 +20,19 @@ int main() {
     char message_box_name[] = { 'M','e','s','s','a','g','e','B','o','x','W', 0 };
     char cf_name[] = { 'C','r','e','a','t','e','F','i','l','e','A', 0 };
     char rf_name[] = { 'R','e','a','d','F','i','l','e', 0};
+    char close_handle_name[] = { 'C','l','o','s','e','H','a','n','d','l','e', 0 };
+    char mb_to_wc_name[] = { 'M','u','l','t','i','B','y','t','e','T','o','W','i','d','e','C','h','a','r', 0 };
+
+    
     // stack based strings to be passed to the messagebox win api
     wchar_t msg_content[] = { 'H','e','l','l','o', ' ', 'W','o','r','l','d','!', 0 };
     wchar_t msg_title[] = { 'D','e','m','o','!', 0 };
-    char  fileName[] = { 'D','e','r','m','o','.','t','x','t', 0};
+    char  fileName[] = { 'c', '-', 's','h','e','l','l','c','o','d','e','.','e','x','e', 0};
+    // Read the file
+    const DWORD bufferSize = 64;
+    char buffer[bufferSize] = { 0 };
+    DWORD bytesRead;
+    wchar_t wide_buffer[bufferSize]; // Crear un buffer Unicode
     // String que contiene el nombre del archivo
     //char fileName[] = "example.txt";
       // resolve kernel32 image base
@@ -44,6 +53,8 @@ int main() {
         return 3;
     }
 
+
+
     // loadlibrarya and getprocaddress function definitions
     HMODULE(WINAPI * _LoadLibraryA)(LPCSTR lpLibFileName) = (HMODULE(WINAPI*)(LPCSTR))load_lib;
     FARPROC(WINAPI * _GetProcAddress)(HMODULE hModule, LPCSTR lpProcName)
@@ -53,7 +64,7 @@ int main() {
     LPVOID u32_dll = _LoadLibraryA(user32_dll_name);
     // load kernell32.dll
     LPVOID k32_dll = _LoadLibraryA(kr32_dll_name);
-    //Definir CreateFileA
+
     HANDLE(WINAPI * _CreateFileA)(
         _In_ LPCSTR lpFileName,
         _In_ DWORD dwDesiredAccess,
@@ -63,33 +74,33 @@ int main() {
         _In_ DWORD dwFlagsAndAttributes,
         _In_opt_ HANDLE hTemplateFile
         ) = (HANDLE(WINAPI*)(
-            _In_ LPCSTR ,
-            _In_ DWORD ,
-            _In_ DWORD ,
-            _In_opt_ LPSECURITY_ATTRIBUTES ,
-            _In_ DWORD ,
-            _In_ DWORD ,
-            _In_opt_ HANDLE 
+            _In_ LPCSTR,
+            _In_ DWORD,
+            _In_ DWORD,
+            _In_opt_ LPSECURITY_ATTRIBUTES,
+            _In_ DWORD,
+            _In_ DWORD,
+            _In_opt_ HANDLE
             )) _GetProcAddress((HMODULE)k32_dll, cf_name);
 
     if (_CreateFileA == INVALID_HANDLE_VALUE)return 3;
 
     // Declarar el puntero a la función ReadFile
+    // Define ReadFile
     BOOL(WINAPI * _ReadFile)(
-        _In_ HANDLE hFile,
-        _Out_ LPVOID lpBuffer,
-        _In_ DWORD nNumberOfBytesToRead,
-        _Out_opt_ LPDWORD lpNumberOfBytesRead,
-        _Inout_opt_ LPOVERLAPPED lpOverlapped
-        ) = (BOOL (WINAPI*)(
-            _In_ HANDLE,
-            _Out_ LPVOID,
-            _In_ DWORD,
-            _Out_opt_ LPDWORD,
-            _Inout_opt_ LPOVERLAPPED
-            )) _GetProcAddress((HMODULE)k32_dll, rf_name);
+        HANDLE hFile,
+        LPVOID lpBuffer,
+        DWORD nNumberOfBytesToRead,
+        LPDWORD lpNumberOfBytesRead,
+        LPOVERLAPPED lpOverlapped
+        ) = (BOOL(WINAPI*)(
+            HANDLE,
+            LPVOID,
+            DWORD,
+            LPDWORD,
+            LPOVERLAPPED)) _GetProcAddress((HMODULE)k32_dll, rf_name);
 
-    if (_ReadFile == FALSE) return 4;
+    if (!_ReadFile) return 4;
 
     // messageboxw function definition
     int (WINAPI * _MessageBoxW)(
@@ -104,16 +115,69 @@ int main() {
 
     if (_MessageBoxW == NULL) return 5;
 
+    // Resolver la dirección de MultiByteToWideChar
+    int (WINAPI * _MultiByteToWideChar)(
+        _In_ UINT CodePage,
+        _In_ DWORD dwFlags,
+        _In_NLS_string_(cbMultiByte) LPCCH lpMultiByteStr,
+        _In_ int cbMultiByte,
+        _Out_writes_opt_(cchWideChar) LPWSTR lpWideCharStr,
+        _In_ int cchWideChar
+        ) = (int (WINAPI*)(
+            UINT, DWORD, LPCCH, int, LPWSTR, int)) _GetProcAddress((HMODULE)k32_dll, mb_to_wc_name);
+    // Resolver la dirección de CloseHandle
+  //  BOOL(WINAPI * _CloseHandle)(HANDLE hObject)
+
+   //     = (BOOL(WINAPI*)(HANDLE)) _GetProcAddress((HMODULE)k32_dll, close_handle_name);
+
+  //  if (!_CloseHandle) return 9; // Error al resolver CloseHandle
+
+    // Usa directamente GetProcAddress para CloseHandle
+    LPVOID close_handle_addr = ((FARPROC(WINAPI*)(HMODULE, LPCSTR))get_proc)((HMODULE)base, "CloseHandle");
+    if (!close_handle_addr) {
+        return 4; // Error al resolver CloseHandle
+    }
+
+    // Define CloseHandle como un puntero a función
+    BOOL(WINAPI* _CloseHandle)(HANDLE hObject) = (BOOL(WINAPI*)(HANDLE))close_handle_addr;
+
+
     // invoke the message box winapi
     _MessageBoxW(0, msg_content, msg_title, MB_OK);
 
-    _CreateFileA(fileName,// Nombre del archivo
+    HANDLE hFile = _CreateFileA(fileName,// Nombre del archivo
         GENERIC_WRITE,// Permiso de escritura
         0,// No compartir
         NULL,// Seguridad predeterminada
         CREATE_ALWAYS,// Crear siempre (sobrescribe si existe)
         FILE_ATTRIBUTE_NORMAL,// Atributos normales
         NULL);
+
+    BOOL file_was_read = _ReadFile(hFile, buffer, bufferSize - 1, &bytesRead, NULL);
+    if (!file_was_read) {
+        CloseHandle(hFile);
+        return 6; // Error reading file
+    }
+
+    // Convertir el buffer de `char` a `wchar_t`
+    int wide_len = _MultiByteToWideChar(
+        CP_ACP,           // Página de código ANSI
+        0,                // Sin banderas adicionales
+        buffer,           // Cadena de origen en formato char
+        -1,               // Longitud de la cadena (terminada en NULL)
+        wide_buffer,      // Buffer de destino en formato wchar_t
+        bufferSize        // Tamaño del buffer de destino
+    );
+
+    if (wide_len == 0) {
+        return 8; // Error al convertir
+    }
+    // Usa CloseHandle
+    if (!_CloseHandle(hFile)) {
+        return 5; // Error al cerrar el archivo
+    }
+    // print the dos header
+    _MessageBoxW(0, wide_buffer, msg_title, MB_OK);
 
     return 0;
 }
