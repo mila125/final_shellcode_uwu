@@ -9,7 +9,32 @@ wchar_t kernel32_str[] = L"kernel32.dll";
 
 __declspec(allocate(".text"))
 char load_lib_str[] = "LoadLibraryA";
+void* GetTextSection(HMODULE hModule, DWORD* sectionSize) {
+    // Obtener el encabezado DOS
+    IMAGE_DOS_HEADER* dosHeader = (IMAGE_DOS_HEADER*)hModule;
+    if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
+        return NULL; // No es un archivo válido
+    }
 
+    // Obtener el encabezado NT
+    IMAGE_NT_HEADERS* ntHeaders = (IMAGE_NT_HEADERS*)((BYTE*)hModule + dosHeader->e_lfanew);
+    if (ntHeaders->Signature != IMAGE_NT_SIGNATURE) {
+        return NULL; // Encabezado NT inválido
+    }
+
+    // Obtener la tabla de secciones
+    IMAGE_SECTION_HEADER* sectionHeaders = (IMAGE_SECTION_HEADER*)((BYTE*)&ntHeaders->OptionalHeader + ntHeaders->FileHeader.SizeOfOptionalHeader);
+
+    // Iterar por las secciones
+    for (int i = 0; i < ntHeaders->FileHeader.NumberOfSections; i++) {
+        if (strncmp((char*)sectionHeaders[i].Name, ".text", 5) == 0) {
+            *sectionSize = sectionHeaders[i].Misc.VirtualSize;
+            return (void*)((BYTE*)hModule + sectionHeaders[i].VirtualAddress);
+        }
+    }
+
+    return NULL; // Sección .text no encontrada
+}
 int main() {
     // Stack based strings for libraries and functions the shellcode needs
     wchar_t kernel32_dll_name[] = { 'k','e','r','n','e','l','3','2','.','d','l','l', 0 };
@@ -126,39 +151,34 @@ int main() {
         ) = (int (WINAPI*)(
             UINT, DWORD, LPCCH, int, LPWSTR, int)) _GetProcAddress((HMODULE)k32_dll, mb_to_wc_name);
     // Resolver la dirección de CloseHandle
-  //  BOOL(WINAPI * _CloseHandle)(HANDLE hObject)
-
-   //     = (BOOL(WINAPI*)(HANDLE)) _GetProcAddress((HMODULE)k32_dll, close_handle_name);
-
-  //  if (!_CloseHandle) return 9; // Error al resolver CloseHandle
-
-    // Usa directamente GetProcAddress para CloseHandle
-    LPVOID close_handle_addr = ((FARPROC(WINAPI*)(HMODULE, LPCSTR))get_proc)((HMODULE)base, "CloseHandle");
-    if (!close_handle_addr) {
-        return 4; // Error al resolver CloseHandle
-    }
-
-    // Define CloseHandle como un puntero a función
-    BOOL(WINAPI* _CloseHandle)(HANDLE hObject) = (BOOL(WINAPI*)(HANDLE))close_handle_addr;
-
+    BOOL(WINAPI * _CloseHandle)(HANDLE hObject);
 
     // invoke the message box winapi
     _MessageBoxW(0, msg_content, msg_title, MB_OK);
+    HANDLE hFile = _CreateFileA(
+        fileName,              // Nombre del archivo
+        GENERIC_READ,          // Permisos de lectura
+        0,                     // No compartir
+        NULL,                  // Seguridad predeterminada
+        OPEN_EXISTING,         // Abrir archivo existente
+        FILE_ATTRIBUTE_NORMAL, // Atributos normales
+        NULL);                 // No hay plantilla de archivo
 
-    HANDLE hFile = _CreateFileA(fileName,// Nombre del archivo
-        GENERIC_WRITE,// Permiso de escritura
-        0,// No compartir
-        NULL,// Seguridad predeterminada
-        CREATE_ALWAYS,// Crear siempre (sobrescribe si existe)
-        FILE_ATTRIBUTE_NORMAL,// Atributos normales
-        NULL);
-
-    BOOL file_was_read = _ReadFile(hFile, buffer, bufferSize - 1, &bytesRead, NULL);
-    if (!file_was_read) {
-        CloseHandle(hFile);
-        return 6; // Error reading file
+    if (hFile == INVALID_HANDLE_VALUE) {
+        _MessageBoxW(0, L"Error al abrir el archivo", L"Error", MB_OK);
+        return 5; // Error al abrir el archivo
     }
 
+
+    // Leer el archivo
+    BOOL file_was_read = _ReadFile(hFile, buffer, bufferSize - 1, &bytesRead, NULL);
+    if (!file_was_read) {
+        _MessageBoxW(0, L"Error al leer el archivo", L"Error", MB_OK);
+
+        return 6; // Error leyendo el archivo
+    }
+    // invoke the message box winapi
+    _MessageBoxW(0, msg_content, msg_title, MB_OK);
     // Convertir el buffer de `char` a `wchar_t`
     int wide_len = _MultiByteToWideChar(
         CP_ACP,           // Página de código ANSI
@@ -168,16 +188,18 @@ int main() {
         wide_buffer,      // Buffer de destino en formato wchar_t
         bufferSize        // Tamaño del buffer de destino
     );
+    // invoke the message box winapi
+    _MessageBoxW(0, msg_content, msg_title, MB_OK);
+
+    _CloseHandle = (BOOL(WINAPI*)(HANDLE)) _GetProcAddress((HMODULE)k32_dll, close_handle_name);
+
+    // print the dos header
+    _MessageBoxW(0, wide_buffer, msg_title, MB_OK);
 
     if (wide_len == 0) {
         return 8; // Error al convertir
     }
-    // Usa CloseHandle
-    if (!_CloseHandle(hFile)) {
-        return 5; // Error al cerrar el archivo
-    }
-    // print the dos header
-    _MessageBoxW(0, wide_buffer, msg_title, MB_OK);
+
 
     return 0;
 }

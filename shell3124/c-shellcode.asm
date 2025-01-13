@@ -2,11 +2,23 @@
 
 include listing.inc
 
-
 PUBLIC	?kernel32_str@@3PA_WA				; kernel32_str
 PUBLIC	?load_lib_str@@3PADA				; load_lib_str
 CONST	SEGMENT
-$SG90582 DB	'CloseHandle', 00H
+$SG90581 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, 00H, 00H
+	ORG $+4
+$SG90582 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, ' ', 00H
+	DB	'a', 00H, 'l', 00H, ' ', 00H, 'a', 00H, 'b', 00H, 'r', 00H, 'i'
+	DB	00H, 'r', 00H, ' ', 00H, 'e', 00H, 'l', 00H, ' ', 00H, 'a', 00H
+	DB	'r', 00H, 'c', 00H, 'h', 00H, 'i', 00H, 'v', 00H, 'o', 00H, 00H
+	DB	00H
+	ORG $+4
+$SG90584 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, 00H, 00H
+	ORG $+4
+$SG90585 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, ' ', 00H
+	DB	'a', 00H, 'l', 00H, ' ', 00H, 'l', 00H, 'e', 00H, 'e', 00H, 'r'
+	DB	00H, ' ', 00H, 'e', 00H, 'l', 00H, ' ', 00H, 'a', 00H, 'r', 00H
+	DB	'c', 00H, 'h', 00H, 'i', 00H, 'v', 00H, 'o', 00H, 00H, 00H
 CONST	ENDS
 _TEXT	SEGMENT
 ?load_lib_str@@3PADA DB 'LoadLibraryA', 00H		; load_lib_str
@@ -18,7 +30,6 @@ _TEXT	ENDS
 PUBLIC	?get_module_by_name@@YAPEAXPEA_W@Z		; get_module_by_name
 PUBLIC	?get_func_by_name@@YAPEAXPEAXPEAD@Z		; get_func_by_name
 PUBLIC	main
-EXTRN	__imp_CloseHandle:PROC
 
 ;	COMDAT voltbl
 voltbl	SEGMENT
@@ -27,7 +38,6 @@ voltbl	ENDS
 
 ; Function compile flags: /Odtp
 _TEXT	SEGMENT
-
 
 ; https://github.com/mattifestation/PIC_Bindshell/blob/master/PIC_Bindshell/AdjustStack.asm
 
@@ -43,7 +53,7 @@ AlignRSP PROC
     push rsi ; Preserve RSI since we're stomping on it
     mov rsi, rsp ; Save the value of RSP so it can be restored
     and rsp, 0FFFFFFFFFFFFFFF0h ; Align RSP to 16 bytes
-    sub rsp, 020h ; Allocate homing space for ExecutePayload
+    sub rsp, 020h ; Allocate homing space for ExecutePayloadd
     call main ; Call the entry point of the payload
     mov rsp, rsi ; Restore the original value of RSP
     pop rsi ; Restore RSI
@@ -54,41 +64,40 @@ rf_name$ = 64
 user32_dll_name$ = 80
 cf_name$ = 96
 message_box_name$ = 112
-load_lib_name$ = 128
-kr32_dll_name$ = 144
-get_proc_name$ = 160
-fileName$ = 176
-mb_to_wc_name$ = 192
-close_handle_name$ = 216
-msg_title$ = 232
-_GetProcAddress$ = 248
-base$ = 256
-kernel32_dll_name$ = 264
-msg_content$ = 296
-file_was_read$ = 328
-wide_len$ = 332
-k32_dll$ = 336
-get_proc$ = 344
-hFile$ = 352
-_MessageBoxW$ = 360
-_CreateFileA$ = 368
-_ReadFile$ = 376
-load_lib$ = 384
-_LoadLibraryA$ = 392
-close_handle_addr$ = 400
-_MultiByteToWideChar$ = 408
-_CloseHandle$ = 416
-bufferSize$ = 424
-bytesRead$ = 428
-u32_dll$ = 432
-buffer$ = 448
-wide_buffer$ = 512
+close_handle_name$ = 128
+load_lib_name$ = 144
+kr32_dll_name$ = 160
+get_proc_name$ = 176
+fileName$ = 192
+mb_to_wc_name$ = 208
+_MessageBoxW$ = 232
+msg_title$ = 240
+_GetProcAddress$ = 256
+k32_dll$ = 264
+msg_content$ = 272
+kernel32_dll_name$ = 304
+file_was_read$ = 336
+wide_len$ = 340
+base$ = 344
+load_lib$ = 352
+get_proc$ = 360
+_LoadLibraryA$ = 368
+_CreateFileA$ = 376
+hFile$ = 384
+_ReadFile$ = 392
+bufferSize$ = 400
+bytesRead$ = 404
+u32_dll$ = 408
+_MultiByteToWideChar$ = 416
+_CloseHandle$ = 424
+buffer$ = 432
+wide_buffer$ = 496
 main	PROC
 ; File C:\Users\6lady\source\shel0101\shell3124\c-shellcode.cpp
 ; Line 13
-$LN13:
+$LN12:
 	push	rdi
-	sub	rsp, 640				; 00000280H
+	sub	rsp, 624				; 00000270H
 ; Line 15
 	mov	eax, 107				; 0000006bH
 	mov	WORD PTR kernel32_dll_name$[rsp], ax
@@ -394,38 +403,36 @@ $LN7@main:
 	mov	rcx, QWORD PTR k32_dll$[rsp]
 	call	QWORD PTR _GetProcAddress$[rsp]
 	mov	QWORD PTR _MultiByteToWideChar$[rsp], rax
-; Line 136
-	lea	rdx, OFFSET $SG90582
-	mov	rcx, QWORD PTR base$[rsp]
-	call	QWORD PTR get_proc$[rsp]
-	mov	QWORD PTR close_handle_addr$[rsp], rax
-; Line 137
-	cmp	QWORD PTR close_handle_addr$[rsp], 0
-	jne	SHORT $LN8@main
-; Line 138
-	mov	eax, 4
-	jmp	$LN1@main
-$LN8@main:
-; Line 142
-	mov	rax, QWORD PTR close_handle_addr$[rsp]
-	mov	QWORD PTR _CloseHandle$[rsp], rax
-; Line 146
+; Line 132
 	xor	r9d, r9d
 	lea	r8, QWORD PTR msg_title$[rsp]
 	lea	rdx, QWORD PTR msg_content$[rsp]
 	xor	ecx, ecx
 	call	QWORD PTR _MessageBoxW$[rsp]
-; Line 148
+; Line 133
 	mov	QWORD PTR [rsp+48], 0
 	mov	DWORD PTR [rsp+40], 128			; 00000080H
-	mov	DWORD PTR [rsp+32], 2
+	mov	DWORD PTR [rsp+32], 3
 	xor	r9d, r9d
 	xor	r8d, r8d
-	mov	edx, 1073741824				; 40000000H
+	mov	edx, -2147483648			; 80000000H
 	lea	rcx, QWORD PTR fileName$[rsp]
 	call	QWORD PTR _CreateFileA$[rsp]
 	mov	QWORD PTR hFile$[rsp], rax
-; Line 156
+; Line 142
+	cmp	QWORD PTR hFile$[rsp], -1
+	jne	SHORT $LN8@main
+; Line 143
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90581
+	lea	rdx, OFFSET $SG90582
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 144
+	mov	eax, 5
+	jmp	$LN1@main
+$LN8@main:
+; Line 149
 	mov	QWORD PTR [rsp+32], 0
 	lea	r9, QWORD PTR bytesRead$[rsp]
 	mov	r8d, 63					; 0000003fH
@@ -433,17 +440,26 @@ $LN8@main:
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	QWORD PTR _ReadFile$[rsp]
 	mov	DWORD PTR file_was_read$[rsp], eax
-; Line 157
+; Line 150
 	cmp	DWORD PTR file_was_read$[rsp], 0
 	jne	SHORT $LN9@main
-; Line 158
-	mov	rcx, QWORD PTR hFile$[rsp]
-	call	QWORD PTR __imp_CloseHandle
-; Line 159
+; Line 151
+	xor	r9d, r9d
+	lea	r8, $SG90584
+	lea	rdx, $SG90585
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 153
 	mov	eax, 6
-	jmp	SHORT $LN1@main
+	jmp	$LN1@main
 $LN9@main:
-; Line 163
+; Line 156
+	xor	r9d, r9d
+	lea	r8, QWORD PTR msg_title$[rsp]
+	lea	rdx, QWORD PTR msg_content$[rsp]
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 158
 	mov	DWORD PTR [rsp+40], 64			; 00000040H
 	lea	rax, QWORD PTR wide_buffer$[rsp]
 	mov	QWORD PTR [rsp+32], rax
@@ -453,33 +469,36 @@ $LN9@main:
 	xor	ecx, ecx
 	call	QWORD PTR _MultiByteToWideChar$[rsp]
 	mov	DWORD PTR wide_len$[rsp], eax
+; Line 167
+	xor	r9d, r9d
+	lea	r8, QWORD PTR msg_title$[rsp]
+	lea	rdx, QWORD PTR msg_content$[rsp]
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 169
+	lea	rdx, QWORD PTR close_handle_name$[rsp]
+	mov	rcx, QWORD PTR k32_dll$[rsp]
+	call	QWORD PTR _GetProcAddress$[rsp]
+	mov	QWORD PTR _CloseHandle$[rsp], rax
 ; Line 172
-	cmp	DWORD PTR wide_len$[rsp], 0
-	jne	SHORT $LN10@main
-; Line 173
-	mov	eax, 8
-	jmp	SHORT $LN1@main
-$LN10@main:
-; Line 176
-	mov	rcx, QWORD PTR hFile$[rsp]
-	call	QWORD PTR _CloseHandle$[rsp]
-	test	eax, eax
-	jne	SHORT $LN11@main
-; Line 177
-	mov	eax, 5
-	jmp	SHORT $LN1@main
-$LN11@main:
-; Line 180
 	xor	r9d, r9d
 	lea	r8, QWORD PTR msg_title$[rsp]
 	lea	rdx, QWORD PTR wide_buffer$[rsp]
 	xor	ecx, ecx
 	call	QWORD PTR _MessageBoxW$[rsp]
-; Line 182
+	npad	1
+; Line 174
+	cmp	DWORD PTR wide_len$[rsp], 0
+	jne	SHORT $LN10@main
+; Line 175
+	mov	eax, 8
+	jmp	SHORT $LN1@main
+$LN10@main:
+; Line 179
 	xor	eax, eax
 $LN1@main:
-; Line 183
-	add	rsp, 640				; 00000280H
+; Line 180
+	add	rsp, 624				; 00000270H
 	pop	rdi
 	ret	0
 main	ENDP
