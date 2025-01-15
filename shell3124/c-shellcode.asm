@@ -2,23 +2,157 @@
 
 include listing.inc
 
+
 PUBLIC	?kernel32_str@@3PA_WA				; kernel32_str
 PUBLIC	?load_lib_str@@3PADA				; load_lib_str
 CONST	SEGMENT
-$SG90581 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, 00H, 00H
+$SG90494 DB	'.text', 00H
+	ORG $+2
+$SG90678 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, 00H, 00H
 	ORG $+4
-$SG90582 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, ' ', 00H
+$SG90679 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, ' ', 00H
 	DB	'a', 00H, 'l', 00H, ' ', 00H, 'a', 00H, 'b', 00H, 'r', 00H, 'i'
 	DB	00H, 'r', 00H, ' ', 00H, 'e', 00H, 'l', 00H, ' ', 00H, 'a', 00H
 	DB	'r', 00H, 'c', 00H, 'h', 00H, 'i', 00H, 'v', 00H, 'o', 00H, 00H
 	DB	00H
 	ORG $+4
-$SG90584 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, 00H, 00H
+$SG90684 DB	'C', 00H, 'o', 00H, 'n', 00H, 't', 00H, 'e', 00H, 'n', 00H
+	DB	'i', 00H, 'd', 00H, 'o', 00H, ' ', 00H, 'd', 00H, 'e', 00H, 'l'
+	DB	00H, ' ', 00H, 'A', 00H, 'r', 00H, 'c', 00H, 'h', 00H, 'i', 00H
+	DB	'v', 00H, 'o', 00H, 00H, 00H
 	ORG $+4
-$SG90585 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, ' ', 00H
-	DB	'a', 00H, 'l', 00H, ' ', 00H, 'l', 00H, 'e', 00H, 'e', 00H, 'r'
-	DB	00H, ' ', 00H, 'e', 00H, 'l', 00H, ' ', 00H, 'a', 00H, 'r', 00H
-	DB	'c', 00H, 'h', 00H, 'i', 00H, 'v', 00H, 'o', 00H, 00H, 00H
+$SG90685 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, 00H, 00H
+	ORG $+4
+$SG90686 DB	'N', 00H, 'o', 00H, ' ', 00H, 's', 00H, 'e', 00H, ' ', 00H
+	DB	'p', 00H, 'u', 00H, 'd', 00H, 'o', 00H, ' ', 00H, 'l', 00H, 'e'
+	DB	00H, 'e', 00H, 'r', 00H, ' ', 00H, 'e', 00H, 'l', 00H, ' ', 00H
+	DB	'a', 00H, 'r', 00H, 'c', 00H, 'h', 00H, 'i', 00H, 'v', 00H, 'o'
+	DB	00H, 00H, 00H
+	ORG $+2
+$SG90687 DB	'D', 00H, 'e', 00H, 'p', 00H, 'u', 00H, 'r', 00H, 'a', 00H
+	DB	'c', 00H, 'i', 00H, 'o', 00H, 'n', 00H, 00H, 00H
+	ORG $+2
+$SG90688 DB	'_', 00H, 'C', 00H, 'l', 00H, 'o', 00H, 's', 00H, 'e', 00H
+	DB	'H', 00H, 'a', 00H, 'n', 00H, 'd', 00H, 'l', 00H, 'e', 00H, '('
+	DB	00H, 'h', 00H, 'F', 00H, 'i', 00H, 'l', 00H, 'e', 00H, ')', 00H
+	DB	00H, 00H
+$SG90689 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, 00H, 00H
+	ORG $+4
+$SG90690 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, ' ', 00H
+	DB	'a', 00H, 'l', 00H, ' ', 00H, 'a', 00H, 'b', 00H, 'r', 00H, 'i'
+	DB	00H, 'r', 00H, ' ', 00H, 'e', 00H, 'l', 00H, ' ', 00H, 'a', 00H
+	DB	'r', 00H, 'c', 00H, 'h', 00H, 'i', 00H, 'v', 00H, 'o', 00H, 00H
+	DB	00H
+	ORG $+4
+$SG90692 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, 00H, 00H
+	ORG $+4
+$SG90693 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, ' ', 00H
+	DB	'a', 00H, 'l', 00H, ' ', 00H, 'a', 00H, 'b', 00H, 'r', 00H, 'i'
+	DB	00H, 'r', 00H, ' ', 00H, 'e', 00H, 'l', 00H, ' ', 00H, 'a', 00H
+	DB	'r', 00H, 'c', 00H, 'h', 00H, 'i', 00H, 'v', 00H, 'o', 00H, 00H
+	DB	00H
+	ORG $+4
+$SG90694 DB	'D', 00H, 'e', 00H, 'p', 00H, 'u', 00H, 'r', 00H, 'a', 00H
+	DB	'c', 00H, 'i', 00H, 'o', 00H, 'n', 00H, 00H, 00H
+	ORG $+2
+$SG90695 DB	'_', 00H, 'C', 00H, 'r', 00H, 'e', 00H, 'a', 00H, 't', 00H
+	DB	'e', 00H, 'F', 00H, 'i', 00H, 'l', 00H, 'e', 00H, 'A', 00H, 00H
+	DB	00H
+	ORG $+6
+$SG90696 DB	'D', 00H, 'e', 00H, 'p', 00H, 'u', 00H, 'r', 00H, 'a', 00H
+	DB	'c', 00H, 'i', 00H, 'o', 00H, 'n', 00H, 00H, 00H
+	ORG $+2
+$SG90697 DB	'G', 00H, 'e', 00H, 't', 00H, 'F', 00H, 'i', 00H, 'l', 00H
+	DB	'e', 00H, 'S', 00H, 'i', 00H, 'z', 00H, 'e', 00H, '(', 00H, 'h'
+	DB	00H, 'F', 00H, 'i', 00H, 'l', 00H, 'e', 00H, ',', 00H, ' ', 00H
+	DB	'N', 00H, 'U', 00H, 'L', 00H, 'L', 00H, ')', 00H, 00H, 00H
+	ORG $+6
+$SG90699 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, 00H, 00H
+	ORG $+4
+$SG90700 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, ' ', 00H
+	DB	'c', 00H, 'r', 00H, 'e', 00H, 'a', 00H, 't', 00H, 'i', 00H, 'n'
+	DB	00H, 'g', 00H, ' ', 00H, 'f', 00H, 'i', 00H, 'l', 00H, 'e', 00H
+	DB	' ', 00H, 'm', 00H, 'a', 00H, 'p', 00H, 'p', 00H, 'i', 00H, 'n'
+	DB	00H, 'g', 00H, '.', 00H, 00H, 00H
+	ORG $+6
+$SG90701 DB	'D', 00H, 'e', 00H, 'p', 00H, 'u', 00H, 'r', 00H, 'a', 00H
+	DB	'c', 00H, 'i', 00H, 'o', 00H, 'n', 00H, 00H, 00H
+	ORG $+2
+$SG90702 DB	'G', 00H, 'e', 00H, 't', 00H, 'F', 00H, 'i', 00H, 'l', 00H
+	DB	'e', 00H, 'S', 00H, 'i', 00H, 'z', 00H, 'e', 00H, '(', 00H, 'h'
+	DB	00H, 'F', 00H, 'i', 00H, 'l', 00H, 'e', 00H, ',', 00H, ' ', 00H
+	DB	'N', 00H, 'U', 00H, 'L', 00H, 'L', 00H, ')', 00H, 00H, 00H
+	ORG $+6
+$SG90704 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, 00H, 00H
+	ORG $+4
+$SG90705 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, ' ', 00H
+	DB	'm', 00H, 'a', 00H, 'p', 00H, 'p', 00H, 'i', 00H, 'n', 00H, 'g'
+	DB	00H, ' ', 00H, 'v', 00H, 'i', 00H, 'e', 00H, 'w', 00H, ' ', 00H
+	DB	'o', 00H, 'f', 00H, ' ', 00H, 'f', 00H, 'i', 00H, 'l', 00H, 'e'
+	DB	00H, '.', 00H, '.', 00H, 00H, 00H
+	ORG $+6
+$SG90706 DB	'D', 00H, 'e', 00H, 'p', 00H, 'u', 00H, 'r', 00H, 'a', 00H
+	DB	'c', 00H, 'i', 00H, 'o', 00H, 'n', 00H, 00H, 00H
+	ORG $+10
+$SG90707 DB	'M', 00H, 'a', 00H, 'p', 00H, 'V', 00H, 'i', 00H, 'e', 00H
+	DB	'w', 00H, 'O', 00H, 'f', 00H, 'F', 00H, 'i', 00H, 'l', 00H, 'e'
+	DB	00H, '(', 00H, 'h', 00H, 'M', 00H, 'a', 00H, 'p', 00H, 'p', 00H
+	DB	'i', 00H, 'n', 00H, 'g', 00H, ',', 00H, ' ', 00H, 'F', 00H, 'I'
+	DB	00H, 'L', 00H, 'E', 00H, '_', 00H, 'M', 00H, 'A', 00H, 'P', 00H
+	DB	'_', 00H, 'R', 00H, 'E', 00H, 'A', 00H, 'D', 00H, ',', 00H, ' '
+	DB	00H, '0', 00H, ',', 00H, ' ', 00H, '0', 00H, ',', 00H, ' ', 00H
+	DB	'0', 00H, ')', 00H, 00H, 00H
+$SG90710 DB	'A', 00H, 'v', 00H, 'i', 00H, 's', 00H, 'o', 00H, 00H, 00H
+	ORG $+4
+$SG90711 DB	'S', 00H, 'e', 00H, 'c', 00H, 'c', 00H, 'i', 00H, 0f3H, 00H
+	DB	'n', 00H, ' ', 00H, '.', 00H, 't', 00H, 'e', 00H, 'x', 00H, 't'
+	DB	00H, ' ', 00H, 'e', 00H, 'n', 00H, 'c', 00H, 'o', 00H, 'n', 00H
+	DB	't', 00H, 'r', 00H, 'a', 00H, 'd', 00H, 'a', 00H, '.', 00H, ' '
+	DB	00H, ' ', 00H, 00H, 00H
+$SG90712 DB	'E', 00H, 'r', 00H, 'r', 00H, 'o', 00H, 'r', 00H, 00H, 00H
+	ORG $+12
+$SG90713 DB	'N', 00H, 'o', 00H, ' ', 00H, 's', 00H, 'e', 00H, ' ', 00H
+	DB	'e', 00H, 'n', 00H, 'c', 00H, 'o', 00H, 'n', 00H, 't', 00H, 'r'
+	DB	00H, 0f3H, 00H, ' ', 00H, 'l', 00H, 'a', 00H, ' ', 00H, 's', 00H
+	DB	'e', 00H, 'c', 00H, 'c', 00H, 'i', 00H, 0f3H, 00H, 'n', 00H, ' '
+	DB	00H, '.', 00H, 't', 00H, 'e', 00H, 'x', 00H, 't', 00H, '.', 00H
+	DB	00H, 00H
+	ORG $+6
+$SG90714 DB	'D', 00H, 'e', 00H, 'p', 00H, 'u', 00H, 'r', 00H, 'a', 00H
+	DB	'c', 00H, 'i', 00H, 'o', 00H, 'n', 00H, 00H, 00H
+	ORG $+2
+$SG90715 DB	'G', 00H, 'e', 00H, 't', 00H, 'T', 00H, 'e', 00H, 'x', 00H
+	DB	't', 00H, 'S', 00H, 'e', 00H, 'c', 00H, 't', 00H, 'i', 00H, 'o'
+	DB	00H, 'n', 00H, '(', 00H, 'e', 00H, 'x', 00H, 'e', 00H, 'B', 00H
+	DB	'a', 00H, 's', 00H, 'e', 00H, ',', 00H, ' ', 00H, '&', 00H, 's'
+	DB	00H, 'e', 00H, 'c', 00H, 't', 00H, 'i', 00H, 'o', 00H, 'n', 00H
+	DB	'S', 00H, 'i', 00H, 'z', 00H, 'e', 00H, ',', 00H, ' ', 00H, 's'
+	DB	00H, 't', 00H, 'r', 00H, 'n', 00H, 'c', 00H, 'm', 00H, 'p', 00H
+	DB	'_', 00H, 'f', 00H, 'u', 00H, 'n', 00H, 'c', 00H, ')', 00H, 00H
+	DB	00H
+$SG90716 DB	'D', 00H, 'e', 00H, 'p', 00H, 'u', 00H, 'r', 00H, 'a', 00H
+	DB	'c', 00H, 'i', 00H, 'o', 00H, 'n', 00H, 00H, 00H
+	ORG $+2
+$SG90717 DB	'U', 00H, 'n', 00H, 'm', 00H, 'a', 00H, 'p', 00H, 'V', 00H
+	DB	'i', 00H, 'e', 00H, 'w', 00H, 'O', 00H, 'f', 00H, 'F', 00H, 'i'
+	DB	00H, 'l', 00H, 'e', 00H, '(', 00H, 'e', 00H, 'x', 00H, 'e', 00H
+	DB	'B', 00H, 'a', 00H, 's', 00H, 'e', 00H, ')', 00H, 00H, 00H
+	ORG $+6
+$SG90718 DB	'D', 00H, 'e', 00H, 'p', 00H, 'u', 00H, 'r', 00H, 'a', 00H
+	DB	'c', 00H, 'i', 00H, 'o', 00H, 'n', 00H, 00H, 00H
+	ORG $+2
+$SG90719 DB	'_', 00H, 'C', 00H, 'l', 00H, 'o', 00H, 's', 00H, 'e', 00H
+	DB	'H', 00H, 'a', 00H, 'n', 00H, 'd', 00H, 'l', 00H, 'e', 00H, '('
+	DB	00H, 'h', 00H, 'M', 00H, 'a', 00H, 'p', 00H, 'p', 00H, 'i', 00H
+	DB	'n', 00H, 'g', 00H, ')', 00H, 00H, 00H
+	ORG $+2
+$SG90720 DB	'D', 00H, 'e', 00H, 'p', 00H, 'u', 00H, 'r', 00H, 'a', 00H
+	DB	'c', 00H, 'i', 00H, 'o', 00H, 'n', 00H, 00H, 00H
+	ORG $+2
+$SG90721 DB	'_', 00H, 'C', 00H, 'l', 00H, 'o', 00H, 's', 00H, 'e', 00H
+	DB	'H', 00H, 'a', 00H, 'n', 00H, 'd', 00H, 'l', 00H, 'e', 00H, '('
+	DB	00H, 'h', 00H, 'F', 00H, 'i', 00H, 'l', 00H, 'e', 00H, ')', 00H
+	DB	00H, 00H
 CONST	ENDS
 _TEXT	SEGMENT
 ?load_lib_str@@3PADA DB 'LoadLibraryA', 00H		; load_lib_str
@@ -29,25 +163,17 @@ _TEXT	SEGMENT
 _TEXT	ENDS
 PUBLIC	?get_module_by_name@@YAPEAXPEA_W@Z		; get_module_by_name
 PUBLIC	?get_func_by_name@@YAPEAXPEAXPEAD@Z		; get_func_by_name
+PUBLIC	?GetTextSection@@YAPEAXPEAXPEAKP6AHPEBD2_K@Z@Z	; GetTextSection
 PUBLIC	main
 
 ;	COMDAT voltbl
 voltbl	SEGMENT
 _volmd	DB	014H
 voltbl	ENDS
+;	COMDAT xdata
 
 ; Function compile flags: /Odtp
 _TEXT	SEGMENT
-
-; https://github.com/mattifestation/PIC_Bindshell/blob/master/PIC_Bindshell/AdjustStack.asm
-
-; AlignRSP is a simple call stub that ensures that the stack is 16-byte aligned prior
-; to calling the entry point of the payload. This is necessary because 64-bit functions
-; in Windows assume that they were called with 16-byte stack alignment. When amd64
-; shellcode is executed, you can't be assured that you stack is 16-byte aligned. For example,
-; if your shellcode lands with 8-byte stack alignment, any call to a Win32 function will likely
-; crash upon calling any ASM instruction that utilizes XMM registers (which require 16-byte)
-; alignment.
 
 AlignRSP PROC
     push rsi ; Preserve RSI since we're stomping on it
@@ -60,45 +186,62 @@ AlignRSP PROC
     ret ; Return to caller
 AlignRSP ENDP
 
-rf_name$ = 64
-user32_dll_name$ = 80
-cf_name$ = 96
-message_box_name$ = 112
-close_handle_name$ = 128
-load_lib_name$ = 144
-kr32_dll_name$ = 160
-get_proc_name$ = 176
-fileName$ = 192
-mb_to_wc_name$ = 208
-_MessageBoxW$ = 232
-msg_title$ = 240
-_GetProcAddress$ = 256
-k32_dll$ = 264
-msg_content$ = 272
-kernel32_dll_name$ = 304
-file_was_read$ = 336
-wide_len$ = 340
-base$ = 344
-load_lib$ = 352
-get_proc$ = 360
-_LoadLibraryA$ = 368
-_CreateFileA$ = 376
-hFile$ = 384
-_ReadFile$ = 392
-bufferSize$ = 400
-bytesRead$ = 404
-u32_dll$ = 408
-_MultiByteToWideChar$ = 416
-_CloseHandle$ = 424
-buffer$ = 432
-wide_buffer$ = 496
+_MessageBoxW$ = 64
+hFile$ = 72
+_GetProcAddress$ = 80
+fileName$ = 88
+k32_dll$ = 104
+strncmp_name$ = 112
+rf_name$ = 120
+user32_dll_name$ = 136
+close_handle_name$ = 152
+message_box_name$ = 168
+cf_name$ = 184
+get_file_size_name$ = 200
+ucrtbase_dll_name$ = 216
+kr32_dll_name$ = 232
+load_lib_name$ = 248
+map_view_of_file_name$ = 264
+get_proc_name$ = 280
+unmap_view_of_file_name$ = 296
+create_file_mapping_name$ = 312
+mb_to_wc_name$ = 336
+bytesRead$ = 360
+func_name$ = 368
+_CloseHandle$ = 376
+msg_title$ = 384
+hMapping$ = 400
+msg_content$ = 408
+kernel32_dll_name$ = 440
+result$1 = 472
+exeBase$ = 480
+_CreateFileA$ = 488
+_LoadLibraryA$ = 496
+base$ = 504
+sectionSize$ = 512
+_strncmp$ = 520
+_UnmapViewOfFile$ = 528
+_MapViewOfFile$ = 536
+_CreateFileMappingA$ = 544
+_GetFileSize$ = 552
+_ReadFile$ = 560
+load_lib$ = 568
+get_proc$ = 576
+u32_dll$ = 584
+hLibC$ = 592
+_MultiByteToWideChar$ = 600
+textSection$ = 608
+fileSize$ = 616
+bufferSize$ = 620
+buffer$ = 624
+wideBuffer$2 = 688
 main	PROC
 ; File C:\Users\6lady\source\shel0101\shell3124\c-shellcode.cpp
-; Line 13
-$LN12:
+; Line 46
+$LN22:
 	push	rdi
-	sub	rsp, 624				; 00000270H
-; Line 15
+	sub	rsp, 816				; 00000330H
+; Line 48
 	mov	eax, 107				; 0000006bH
 	mov	WORD PTR kernel32_dll_name$[rsp], ax
 	mov	eax, 101				; 00000065H
@@ -125,7 +268,7 @@ $LN12:
 	mov	WORD PTR kernel32_dll_name$[rsp+22], ax
 	xor	eax, eax
 	mov	WORD PTR kernel32_dll_name$[rsp+24], ax
-; Line 16
+; Line 49
 	mov	BYTE PTR load_lib_name$[rsp], 76	; 0000004cH
 	mov	BYTE PTR load_lib_name$[rsp+1], 111	; 0000006fH
 	mov	BYTE PTR load_lib_name$[rsp+2], 97	; 00000061H
@@ -139,7 +282,7 @@ $LN12:
 	mov	BYTE PTR load_lib_name$[rsp+10], 121	; 00000079H
 	mov	BYTE PTR load_lib_name$[rsp+11], 65	; 00000041H
 	mov	BYTE PTR load_lib_name$[rsp+12], 0
-; Line 17
+; Line 50
 	mov	BYTE PTR get_proc_name$[rsp], 71	; 00000047H
 	mov	BYTE PTR get_proc_name$[rsp+1], 101	; 00000065H
 	mov	BYTE PTR get_proc_name$[rsp+2], 116	; 00000074H
@@ -155,7 +298,7 @@ $LN12:
 	mov	BYTE PTR get_proc_name$[rsp+12], 115	; 00000073H
 	mov	BYTE PTR get_proc_name$[rsp+13], 115	; 00000073H
 	mov	BYTE PTR get_proc_name$[rsp+14], 0
-; Line 18
+; Line 51
 	mov	BYTE PTR kr32_dll_name$[rsp], 107	; 0000006bH
 	mov	BYTE PTR kr32_dll_name$[rsp+1], 101	; 00000065H
 	mov	BYTE PTR kr32_dll_name$[rsp+2], 114	; 00000072H
@@ -169,7 +312,7 @@ $LN12:
 	mov	BYTE PTR kr32_dll_name$[rsp+10], 108	; 0000006cH
 	mov	BYTE PTR kr32_dll_name$[rsp+11], 108	; 0000006cH
 	mov	BYTE PTR kr32_dll_name$[rsp+12], 0
-; Line 19
+; Line 52
 	mov	BYTE PTR user32_dll_name$[rsp], 117	; 00000075H
 	mov	BYTE PTR user32_dll_name$[rsp+1], 115	; 00000073H
 	mov	BYTE PTR user32_dll_name$[rsp+2], 101	; 00000065H
@@ -181,7 +324,20 @@ $LN12:
 	mov	BYTE PTR user32_dll_name$[rsp+8], 108	; 0000006cH
 	mov	BYTE PTR user32_dll_name$[rsp+9], 108	; 0000006cH
 	mov	BYTE PTR user32_dll_name$[rsp+10], 0
-; Line 20
+; Line 53
+	mov	BYTE PTR ucrtbase_dll_name$[rsp], 117	; 00000075H
+	mov	BYTE PTR ucrtbase_dll_name$[rsp+1], 99	; 00000063H
+	mov	BYTE PTR ucrtbase_dll_name$[rsp+2], 114	; 00000072H
+	mov	BYTE PTR ucrtbase_dll_name$[rsp+3], 116	; 00000074H
+	mov	BYTE PTR ucrtbase_dll_name$[rsp+4], 98	; 00000062H
+	mov	BYTE PTR ucrtbase_dll_name$[rsp+5], 97	; 00000061H
+	mov	BYTE PTR ucrtbase_dll_name$[rsp+6], 115	; 00000073H
+	mov	BYTE PTR ucrtbase_dll_name$[rsp+7], 101	; 00000065H
+	mov	BYTE PTR ucrtbase_dll_name$[rsp+8], 46	; 0000002eH
+	mov	BYTE PTR ucrtbase_dll_name$[rsp+9], 100	; 00000064H
+	mov	BYTE PTR ucrtbase_dll_name$[rsp+10], 108 ; 0000006cH
+	mov	BYTE PTR ucrtbase_dll_name$[rsp+11], 108 ; 0000006cH
+; Line 55
 	mov	BYTE PTR message_box_name$[rsp], 77	; 0000004dH
 	mov	BYTE PTR message_box_name$[rsp+1], 101	; 00000065H
 	mov	BYTE PTR message_box_name$[rsp+2], 115	; 00000073H
@@ -194,7 +350,7 @@ $LN12:
 	mov	BYTE PTR message_box_name$[rsp+9], 120	; 00000078H
 	mov	BYTE PTR message_box_name$[rsp+10], 87	; 00000057H
 	mov	BYTE PTR message_box_name$[rsp+11], 0
-; Line 21
+; Line 56
 	mov	BYTE PTR cf_name$[rsp], 67		; 00000043H
 	mov	BYTE PTR cf_name$[rsp+1], 114		; 00000072H
 	mov	BYTE PTR cf_name$[rsp+2], 101		; 00000065H
@@ -207,7 +363,7 @@ $LN12:
 	mov	BYTE PTR cf_name$[rsp+9], 101		; 00000065H
 	mov	BYTE PTR cf_name$[rsp+10], 65		; 00000041H
 	mov	BYTE PTR cf_name$[rsp+11], 0
-; Line 22
+; Line 57
 	mov	BYTE PTR rf_name$[rsp], 82		; 00000052H
 	mov	BYTE PTR rf_name$[rsp+1], 101		; 00000065H
 	mov	BYTE PTR rf_name$[rsp+2], 97		; 00000061H
@@ -217,7 +373,7 @@ $LN12:
 	mov	BYTE PTR rf_name$[rsp+6], 108		; 0000006cH
 	mov	BYTE PTR rf_name$[rsp+7], 101		; 00000065H
 	mov	BYTE PTR rf_name$[rsp+8], 0
-; Line 23
+; Line 58
 	mov	BYTE PTR close_handle_name$[rsp], 67	; 00000043H
 	mov	BYTE PTR close_handle_name$[rsp+1], 108	; 0000006cH
 	mov	BYTE PTR close_handle_name$[rsp+2], 111	; 0000006fH
@@ -230,7 +386,7 @@ $LN12:
 	mov	BYTE PTR close_handle_name$[rsp+9], 108	; 0000006cH
 	mov	BYTE PTR close_handle_name$[rsp+10], 101 ; 00000065H
 	mov	BYTE PTR close_handle_name$[rsp+11], 0
-; Line 24
+; Line 59
 	mov	BYTE PTR mb_to_wc_name$[rsp], 77	; 0000004dH
 	mov	BYTE PTR mb_to_wc_name$[rsp+1], 117	; 00000075H
 	mov	BYTE PTR mb_to_wc_name$[rsp+2], 108	; 0000006cH
@@ -251,7 +407,81 @@ $LN12:
 	mov	BYTE PTR mb_to_wc_name$[rsp+17], 97	; 00000061H
 	mov	BYTE PTR mb_to_wc_name$[rsp+18], 114	; 00000072H
 	mov	BYTE PTR mb_to_wc_name$[rsp+19], 0
-; Line 28
+; Line 60
+	mov	BYTE PTR strncmp_name$[rsp], 115	; 00000073H
+	mov	BYTE PTR strncmp_name$[rsp+1], 116	; 00000074H
+	mov	BYTE PTR strncmp_name$[rsp+2], 114	; 00000072H
+	mov	BYTE PTR strncmp_name$[rsp+3], 110	; 0000006eH
+	mov	BYTE PTR strncmp_name$[rsp+4], 99	; 00000063H
+	mov	BYTE PTR strncmp_name$[rsp+5], 109	; 0000006dH
+	mov	BYTE PTR strncmp_name$[rsp+6], 112	; 00000070H
+	mov	BYTE PTR strncmp_name$[rsp+7], 0
+; Line 61
+	mov	BYTE PTR get_file_size_name$[rsp], 71	; 00000047H
+	mov	BYTE PTR get_file_size_name$[rsp+1], 101 ; 00000065H
+	mov	BYTE PTR get_file_size_name$[rsp+2], 116 ; 00000074H
+	mov	BYTE PTR get_file_size_name$[rsp+3], 70	; 00000046H
+	mov	BYTE PTR get_file_size_name$[rsp+4], 105 ; 00000069H
+	mov	BYTE PTR get_file_size_name$[rsp+5], 108 ; 0000006cH
+	mov	BYTE PTR get_file_size_name$[rsp+6], 101 ; 00000065H
+	mov	BYTE PTR get_file_size_name$[rsp+7], 83	; 00000053H
+	mov	BYTE PTR get_file_size_name$[rsp+8], 105 ; 00000069H
+	mov	BYTE PTR get_file_size_name$[rsp+9], 122 ; 0000007aH
+	mov	BYTE PTR get_file_size_name$[rsp+10], 101 ; 00000065H
+	mov	BYTE PTR get_file_size_name$[rsp+11], 0
+; Line 62
+	mov	BYTE PTR map_view_of_file_name$[rsp], 77 ; 0000004dH
+	mov	BYTE PTR map_view_of_file_name$[rsp+1], 97 ; 00000061H
+	mov	BYTE PTR map_view_of_file_name$[rsp+2], 112 ; 00000070H
+	mov	BYTE PTR map_view_of_file_name$[rsp+3], 86 ; 00000056H
+	mov	BYTE PTR map_view_of_file_name$[rsp+4], 105 ; 00000069H
+	mov	BYTE PTR map_view_of_file_name$[rsp+5], 101 ; 00000065H
+	mov	BYTE PTR map_view_of_file_name$[rsp+6], 119 ; 00000077H
+	mov	BYTE PTR map_view_of_file_name$[rsp+7], 79 ; 0000004fH
+	mov	BYTE PTR map_view_of_file_name$[rsp+8], 102 ; 00000066H
+	mov	BYTE PTR map_view_of_file_name$[rsp+9], 70 ; 00000046H
+	mov	BYTE PTR map_view_of_file_name$[rsp+10], 105 ; 00000069H
+	mov	BYTE PTR map_view_of_file_name$[rsp+11], 108 ; 0000006cH
+	mov	BYTE PTR map_view_of_file_name$[rsp+12], 101 ; 00000065H
+	mov	BYTE PTR map_view_of_file_name$[rsp+13], 0
+; Line 63
+	mov	BYTE PTR unmap_view_of_file_name$[rsp], 85 ; 00000055H
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+1], 110 ; 0000006eH
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+2], 109 ; 0000006dH
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+3], 97 ; 00000061H
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+4], 112 ; 00000070H
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+5], 86 ; 00000056H
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+6], 105 ; 00000069H
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+7], 101 ; 00000065H
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+8], 119 ; 00000077H
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+9], 79 ; 0000004fH
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+10], 102 ; 00000066H
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+11], 70 ; 00000046H
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+12], 105 ; 00000069H
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+13], 108 ; 0000006cH
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+14], 101 ; 00000065H
+	mov	BYTE PTR unmap_view_of_file_name$[rsp+15], 0
+; Line 64
+	mov	BYTE PTR create_file_mapping_name$[rsp], 67 ; 00000043H
+	mov	BYTE PTR create_file_mapping_name$[rsp+1], 114 ; 00000072H
+	mov	BYTE PTR create_file_mapping_name$[rsp+2], 101 ; 00000065H
+	mov	BYTE PTR create_file_mapping_name$[rsp+3], 97 ; 00000061H
+	mov	BYTE PTR create_file_mapping_name$[rsp+4], 116 ; 00000074H
+	mov	BYTE PTR create_file_mapping_name$[rsp+5], 101 ; 00000065H
+	mov	BYTE PTR create_file_mapping_name$[rsp+6], 70 ; 00000046H
+	mov	BYTE PTR create_file_mapping_name$[rsp+7], 105 ; 00000069H
+	mov	BYTE PTR create_file_mapping_name$[rsp+8], 108 ; 0000006cH
+	mov	BYTE PTR create_file_mapping_name$[rsp+9], 101 ; 00000065H
+	mov	BYTE PTR create_file_mapping_name$[rsp+10], 77 ; 0000004dH
+	mov	BYTE PTR create_file_mapping_name$[rsp+11], 97 ; 00000061H
+	mov	BYTE PTR create_file_mapping_name$[rsp+12], 112 ; 00000070H
+	mov	BYTE PTR create_file_mapping_name$[rsp+13], 112 ; 00000070H
+	mov	BYTE PTR create_file_mapping_name$[rsp+14], 105 ; 00000069H
+	mov	BYTE PTR create_file_mapping_name$[rsp+15], 110 ; 0000006eH
+	mov	BYTE PTR create_file_mapping_name$[rsp+16], 103 ; 00000067H
+	mov	BYTE PTR create_file_mapping_name$[rsp+17], 65 ; 00000041H
+	mov	BYTE PTR create_file_mapping_name$[rsp+18], 0
+; Line 67
 	mov	eax, 72					; 00000048H
 	mov	WORD PTR msg_content$[rsp], ax
 	mov	eax, 101				; 00000065H
@@ -278,7 +508,7 @@ $LN12:
 	mov	WORD PTR msg_content$[rsp+22], ax
 	xor	eax, eax
 	mov	WORD PTR msg_content$[rsp+24], ax
-; Line 29
+; Line 68
 	mov	eax, 68					; 00000044H
 	mov	WORD PTR msg_title$[rsp], ax
 	mov	eax, 101				; 00000065H
@@ -291,7 +521,7 @@ $LN12:
 	mov	WORD PTR msg_title$[rsp+8], ax
 	xor	eax, eax
 	mov	WORD PTR msg_title$[rsp+10], ax
-; Line 30
+; Line 69
 	mov	BYTE PTR fileName$[rsp], 99		; 00000063H
 	mov	BYTE PTR fileName$[rsp+1], 45		; 0000002dH
 	mov	BYTE PTR fileName$[rsp+2], 115		; 00000073H
@@ -308,108 +538,172 @@ $LN12:
 	mov	BYTE PTR fileName$[rsp+13], 120		; 00000078H
 	mov	BYTE PTR fileName$[rsp+14], 101		; 00000065H
 	mov	BYTE PTR fileName$[rsp+15], 0
-; Line 32
+; Line 71
+	mov	BYTE PTR func_name$[rsp], 115		; 00000073H
+	mov	BYTE PTR func_name$[rsp+1], 116		; 00000074H
+	mov	BYTE PTR func_name$[rsp+2], 114		; 00000072H
+	mov	BYTE PTR func_name$[rsp+3], 110		; 0000006eH
+	mov	BYTE PTR func_name$[rsp+4], 99		; 00000063H
+	mov	BYTE PTR func_name$[rsp+5], 109		; 0000006dH
+	mov	BYTE PTR func_name$[rsp+6], 112		; 00000070H
+	mov	BYTE PTR func_name$[rsp+7], 0
+; Line 73
 	mov	DWORD PTR bufferSize$[rsp], 64		; 00000040H
-; Line 33
+; Line 74
 	lea	rax, QWORD PTR buffer$[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 64					; 00000040H
 	rep stosb
-; Line 39
+; Line 82
 	lea	rcx, QWORD PTR kernel32_dll_name$[rsp]
 	call	?get_module_by_name@@YAPEAXPEA_W@Z	; get_module_by_name
 	mov	QWORD PTR base$[rsp], rax
-; Line 40
+; Line 83
 	cmp	QWORD PTR base$[rsp], 0
 	jne	SHORT $LN2@main
-; Line 41
+; Line 84
 	mov	eax, 1
 	jmp	$LN1@main
 $LN2@main:
-; Line 45
+; Line 88
 	lea	rdx, QWORD PTR load_lib_name$[rsp]
 	mov	rcx, QWORD PTR base$[rsp]
 	call	?get_func_by_name@@YAPEAXPEAXPEAD@Z	; get_func_by_name
 	mov	QWORD PTR load_lib$[rsp], rax
-; Line 46
+; Line 89
 	cmp	QWORD PTR load_lib$[rsp], 0
 	jne	SHORT $LN3@main
-; Line 47
+; Line 90
 	mov	eax, 2
 	jmp	$LN1@main
 $LN3@main:
-; Line 51
+; Line 94
 	lea	rdx, QWORD PTR get_proc_name$[rsp]
 	mov	rcx, QWORD PTR base$[rsp]
 	call	?get_func_by_name@@YAPEAXPEAXPEAD@Z	; get_func_by_name
 	mov	QWORD PTR get_proc$[rsp], rax
-; Line 52
+; Line 95
 	cmp	QWORD PTR get_proc$[rsp], 0
 	jne	SHORT $LN4@main
-; Line 53
+; Line 96
 	mov	eax, 3
 	jmp	$LN1@main
 $LN4@main:
-; Line 59
+; Line 102
 	mov	rax, QWORD PTR load_lib$[rsp]
 	mov	QWORD PTR _LoadLibraryA$[rsp], rax
-; Line 61
+; Line 104
 	mov	rax, QWORD PTR get_proc$[rsp]
 	mov	QWORD PTR _GetProcAddress$[rsp], rax
-; Line 64
+; Line 107
 	lea	rcx, QWORD PTR user32_dll_name$[rsp]
 	call	QWORD PTR _LoadLibraryA$[rsp]
 	mov	QWORD PTR u32_dll$[rsp], rax
-; Line 66
+; Line 109
 	lea	rcx, QWORD PTR kr32_dll_name$[rsp]
 	call	QWORD PTR _LoadLibraryA$[rsp]
 	mov	QWORD PTR k32_dll$[rsp], rax
-; Line 76
+; Line 111
+	lea	rcx, QWORD PTR ucrtbase_dll_name$[rsp]
+	call	QWORD PTR _LoadLibraryA$[rsp]
+	mov	QWORD PTR hLibC$[rsp], rax
+; Line 116
+	lea	rdx, QWORD PTR get_file_size_name$[rsp]
+	mov	rcx, QWORD PTR k32_dll$[rsp]
+	call	QWORD PTR _GetProcAddress$[rsp]
+	mov	QWORD PTR _GetFileSize$[rsp], rax
+; Line 125
+	lea	rdx, QWORD PTR map_view_of_file_name$[rsp]
+	mov	rcx, QWORD PTR k32_dll$[rsp]
+	call	QWORD PTR _GetProcAddress$[rsp]
+	mov	QWORD PTR _MapViewOfFile$[rsp], rax
+; Line 130
+	lea	rdx, QWORD PTR unmap_view_of_file_name$[rsp]
+	mov	rcx, QWORD PTR k32_dll$[rsp]
+	call	QWORD PTR _GetProcAddress$[rsp]
+	mov	QWORD PTR _UnmapViewOfFile$[rsp], rax
+; Line 140
+	lea	rdx, QWORD PTR create_file_mapping_name$[rsp]
+	mov	rcx, QWORD PTR k32_dll$[rsp]
+	call	QWORD PTR _GetProcAddress$[rsp]
+	mov	QWORD PTR _CreateFileMappingA$[rsp], rax
+; Line 144
+	cmp	QWORD PTR _GetFileSize$[rsp], 0
+	je	SHORT $LN6@main
+	cmp	QWORD PTR _MapViewOfFile$[rsp], 0
+	je	SHORT $LN6@main
+	cmp	QWORD PTR _UnmapViewOfFile$[rsp], 0
+	je	SHORT $LN6@main
+	cmp	QWORD PTR _CreateFileMappingA$[rsp], 0
+	jne	SHORT $LN5@main
+$LN6@main:
+; Line 146
+	mov	eax, -1
+	jmp	$LN1@main
+$LN5@main:
+; Line 156
 	lea	rdx, QWORD PTR cf_name$[rsp]
 	mov	rcx, QWORD PTR k32_dll$[rsp]
 	call	QWORD PTR _GetProcAddress$[rsp]
 	mov	QWORD PTR _CreateFileA$[rsp], rax
-; Line 86
+; Line 166
 	cmp	QWORD PTR _CreateFileA$[rsp], -1
-	jne	SHORT $LN5@main
+	jne	SHORT $LN7@main
 	mov	eax, 3
 	jmp	$LN1@main
-$LN5@main:
-; Line 96
+$LN7@main:
+; Line 176
 	lea	rdx, QWORD PTR rf_name$[rsp]
 	mov	rcx, QWORD PTR k32_dll$[rsp]
 	call	QWORD PTR _GetProcAddress$[rsp]
 	mov	QWORD PTR _ReadFile$[rsp], rax
-; Line 103
+; Line 183
 	cmp	QWORD PTR _ReadFile$[rsp], 0
-	jne	SHORT $LN6@main
+	jne	SHORT $LN8@main
 	mov	eax, 4
 	jmp	$LN1@main
-$LN6@main:
-; Line 110
+$LN8@main:
+; Line 190
 	lea	rdx, QWORD PTR message_box_name$[rsp]
 	mov	rcx, QWORD PTR u32_dll$[rsp]
 	call	QWORD PTR _GetProcAddress$[rsp]
 	mov	QWORD PTR _MessageBoxW$[rsp], rax
-; Line 116
+; Line 196
 	cmp	QWORD PTR _MessageBoxW$[rsp], 0
-	jne	SHORT $LN7@main
+	jne	SHORT $LN9@main
 	mov	eax, 5
 	jmp	$LN1@main
-$LN7@main:
-; Line 126
+$LN9@main:
+; Line 206
 	lea	rdx, QWORD PTR mb_to_wc_name$[rsp]
 	mov	rcx, QWORD PTR k32_dll$[rsp]
 	call	QWORD PTR _GetProcAddress$[rsp]
 	mov	QWORD PTR _MultiByteToWideChar$[rsp], rax
-; Line 132
+; Line 210
+	lea	rdx, QWORD PTR close_handle_name$[rsp]
+	mov	rcx, QWORD PTR k32_dll$[rsp]
+	call	QWORD PTR _GetProcAddress$[rsp]
+	mov	QWORD PTR _CloseHandle$[rsp], rax
+; Line 217
+	lea	rdx, QWORD PTR strncmp_name$[rsp]
+	mov	rcx, QWORD PTR hLibC$[rsp]
+	call	QWORD PTR _GetProcAddress$[rsp]
+	mov	QWORD PTR _strncmp$[rsp], rax
+; Line 220
+	cmp	QWORD PTR _strncmp$[rsp], 0
+	jne	SHORT $LN10@main
+; Line 223
+	mov	eax, -1
+	jmp	$LN1@main
+$LN10@main:
+; Line 227
 	xor	r9d, r9d
 	lea	r8, QWORD PTR msg_title$[rsp]
 	lea	rdx, QWORD PTR msg_content$[rsp]
 	xor	ecx, ecx
 	call	QWORD PTR _MessageBoxW$[rsp]
-; Line 133
+; Line 229
 	mov	QWORD PTR [rsp+48], 0
 	mov	DWORD PTR [rsp+40], 128			; 00000080H
 	mov	DWORD PTR [rsp+32], 3
@@ -419,89 +713,375 @@ $LN7@main:
 	lea	rcx, QWORD PTR fileName$[rsp]
 	call	QWORD PTR _CreateFileA$[rsp]
 	mov	QWORD PTR hFile$[rsp], rax
-; Line 142
+; Line 238
 	cmp	QWORD PTR hFile$[rsp], -1
-	jne	SHORT $LN8@main
-; Line 143
+	jne	SHORT $LN11@main
+; Line 239
 	xor	r9d, r9d
-	lea	r8, OFFSET $SG90581
-	lea	rdx, OFFSET $SG90582
+	lea	r8, OFFSET $SG90678
+	lea	rdx, OFFSET $SG90679
 	xor	ecx, ecx
 	call	QWORD PTR _MessageBoxW$[rsp]
-; Line 144
+; Line 240
 	mov	eax, 5
 	jmp	$LN1@main
-$LN8@main:
-; Line 149
+$LN11@main:
+; Line 243
+	xor	r9d, r9d
+	lea	r8, QWORD PTR msg_title$[rsp]
+	lea	rdx, QWORD PTR msg_content$[rsp]
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+	npad	1
+; Line 245
+	cmp	QWORD PTR hFile$[rsp], -1
+	je	$LN12@main
+; Line 246
 	mov	QWORD PTR [rsp+32], 0
 	lea	r9, QWORD PTR bytesRead$[rsp]
 	mov	r8d, 63					; 0000003fH
 	lea	rdx, QWORD PTR buffer$[rsp]
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	QWORD PTR _ReadFile$[rsp]
-	mov	DWORD PTR file_was_read$[rsp], eax
-; Line 150
-	cmp	DWORD PTR file_was_read$[rsp], 0
-	jne	SHORT $LN9@main
-; Line 151
-	xor	r9d, r9d
-	lea	r8, $SG90584
-	lea	rdx, $SG90585
-	xor	ecx, ecx
-	call	QWORD PTR _MessageBoxW$[rsp]
-; Line 153
-	mov	eax, 6
-	jmp	$LN1@main
-$LN9@main:
-; Line 156
-	xor	r9d, r9d
-	lea	r8, QWORD PTR msg_title$[rsp]
-	lea	rdx, QWORD PTR msg_content$[rsp]
-	xor	ecx, ecx
-	call	QWORD PTR _MessageBoxW$[rsp]
-; Line 158
+	mov	DWORD PTR result$1[rsp], eax
+; Line 247
+	cmp	DWORD PTR result$1[rsp], 0
+	je	SHORT $LN14@main
+	cmp	DWORD PTR bytesRead$[rsp], 0
+	jbe	SHORT $LN14@main
+; Line 249
+	mov	eax, DWORD PTR bytesRead$[rsp]
+	mov	BYTE PTR buffer$[rsp+rax], 0
+; Line 251
+	lea	rax, QWORD PTR wideBuffer$2[rsp]
+	mov	rdi, rax
+	xor	eax, eax
+	mov	ecx, 128				; 00000080H
+	rep stosb
+; Line 252
 	mov	DWORD PTR [rsp+40], 64			; 00000040H
-	lea	rax, QWORD PTR wide_buffer$[rsp]
+	lea	rax, QWORD PTR wideBuffer$2[rsp]
 	mov	QWORD PTR [rsp+32], rax
-	mov	r9d, -1
+	mov	r9d, DWORD PTR bytesRead$[rsp]
 	lea	r8, QWORD PTR buffer$[rsp]
 	xor	edx, edx
 	xor	ecx, ecx
 	call	QWORD PTR _MultiByteToWideChar$[rsp]
-	mov	DWORD PTR wide_len$[rsp], eax
-; Line 167
+; Line 253
 	xor	r9d, r9d
-	lea	r8, QWORD PTR msg_title$[rsp]
-	lea	rdx, QWORD PTR msg_content$[rsp]
-	xor	ecx, ecx
-	call	QWORD PTR _MessageBoxW$[rsp]
-; Line 169
-	lea	rdx, QWORD PTR close_handle_name$[rsp]
-	mov	rcx, QWORD PTR k32_dll$[rsp]
-	call	QWORD PTR _GetProcAddress$[rsp]
-	mov	QWORD PTR _CloseHandle$[rsp], rax
-; Line 172
-	xor	r9d, r9d
-	lea	r8, QWORD PTR msg_title$[rsp]
-	lea	rdx, QWORD PTR wide_buffer$[rsp]
+	lea	r8, OFFSET $SG90684
+	lea	rdx, QWORD PTR wideBuffer$2[rsp]
 	xor	ecx, ecx
 	call	QWORD PTR _MessageBoxW$[rsp]
 	npad	1
-; Line 174
-	cmp	DWORD PTR wide_len$[rsp], 0
-	jne	SHORT $LN10@main
-; Line 175
-	mov	eax, 8
-	jmp	SHORT $LN1@main
-$LN10@main:
-; Line 179
+; Line 254
+	jmp	SHORT $LN15@main
+$LN14@main:
+; Line 256
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90685
+	lea	rdx, OFFSET $SG90686
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+	npad	1
+$LN15@main:
+; Line 260
+	mov	rcx, QWORD PTR hFile$[rsp]
+	call	QWORD PTR _CloseHandle$[rsp]
+; Line 262
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90687
+	lea	rdx, OFFSET $SG90688
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+	npad	1
+; Line 263
+	jmp	SHORT $LN13@main
+$LN12@main:
+; Line 265
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90689
+	lea	rdx, OFFSET $SG90690
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+	npad	1
+$LN13@main:
+; Line 270
+	mov	QWORD PTR [rsp+48], 0
+	mov	DWORD PTR [rsp+40], 128			; 00000080H
+	mov	DWORD PTR [rsp+32], 3
+	xor	r9d, r9d
+	xor	r8d, r8d
+	mov	edx, -2147483648			; 80000000H
+	lea	rcx, QWORD PTR fileName$[rsp]
+	call	QWORD PTR _CreateFileA$[rsp]
+	mov	QWORD PTR hFile$[rsp], rax
+; Line 279
+	cmp	QWORD PTR hFile$[rsp], -1
+	jne	SHORT $LN16@main
+; Line 280
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90692
+	lea	rdx, OFFSET $SG90693
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 281
+	mov	eax, 5
+	jmp	$LN1@main
+$LN16@main:
+; Line 284
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90694
+	lea	rdx, OFFSET $SG90695
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 286
+	xor	edx, edx
+	mov	rcx, QWORD PTR hFile$[rsp]
+	call	QWORD PTR _GetFileSize$[rsp]
+	mov	DWORD PTR fileSize$[rsp], eax
+; Line 288
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90696
+	lea	rdx, OFFSET $SG90697
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 290
+	mov	QWORD PTR [rsp+40], 0
+	mov	DWORD PTR [rsp+32], 0
+	xor	r9d, r9d
+	mov	r8d, 2
+	xor	edx, edx
+	mov	rcx, QWORD PTR hFile$[rsp]
+	call	QWORD PTR _CreateFileMappingA$[rsp]
+	mov	QWORD PTR hMapping$[rsp], rax
+; Line 291
+	cmp	QWORD PTR hMapping$[rsp], 0
+	jne	SHORT $LN17@main
+; Line 292
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90699
+	lea	rdx, OFFSET $SG90700
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 293
+	mov	rcx, QWORD PTR hFile$[rsp]
+	call	QWORD PTR _CloseHandle$[rsp]
+; Line 294
+	mov	eax, 1
+	jmp	$LN1@main
+$LN17@main:
+; Line 297
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90701
+	lea	rdx, OFFSET $SG90702
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 299
+	mov	QWORD PTR [rsp+32], 0
+	xor	r9d, r9d
+	xor	r8d, r8d
+	mov	edx, 4
+	mov	rcx, QWORD PTR hMapping$[rsp]
+	call	QWORD PTR _MapViewOfFile$[rsp]
+	mov	QWORD PTR exeBase$[rsp], rax
+; Line 300
+	cmp	QWORD PTR exeBase$[rsp], 0
+	jne	SHORT $LN18@main
+; Line 301
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90704
+	lea	rdx, OFFSET $SG90705
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 302
+	mov	rcx, QWORD PTR hMapping$[rsp]
+	call	QWORD PTR _CloseHandle$[rsp]
+; Line 303
+	mov	rcx, QWORD PTR hFile$[rsp]
+	call	QWORD PTR _CloseHandle$[rsp]
+; Line 304
+	mov	eax, 1
+	jmp	$LN1@main
+$LN18@main:
+; Line 307
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90706
+	lea	rdx, OFFSET $SG90707
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 309
+	mov	DWORD PTR sectionSize$[rsp], 0
+; Line 310
+	mov	r8, QWORD PTR _strncmp$[rsp]
+	lea	rdx, QWORD PTR sectionSize$[rsp]
+	mov	rcx, QWORD PTR exeBase$[rsp]
+	call	?GetTextSection@@YAPEAXPEAXPEAKP6AHPEBD2_K@Z@Z ; GetTextSection
+	mov	QWORD PTR textSection$[rsp], rax
+; Line 311
+	cmp	QWORD PTR textSection$[rsp], 0
+	je	SHORT $LN19@main
+; Line 312
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90710
+	lea	rdx, OFFSET $SG90711
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+	npad	1
+; Line 314
+	jmp	SHORT $LN20@main
+$LN19@main:
+; Line 316
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90712
+	lea	rdx, OFFSET $SG90713
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+	npad	1
+$LN20@main:
+; Line 319
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90714
+	lea	rdx, OFFSET $SG90715
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 321
+	mov	rcx, QWORD PTR exeBase$[rsp]
+	call	QWORD PTR _UnmapViewOfFile$[rsp]
+; Line 323
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90716
+	lea	rdx, OFFSET $SG90717
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 324
+	mov	rcx, QWORD PTR hMapping$[rsp]
+	call	QWORD PTR _CloseHandle$[rsp]
+; Line 326
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90718
+	lea	rdx, OFFSET $SG90719
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 328
+	mov	rcx, QWORD PTR hFile$[rsp]
+	call	QWORD PTR _CloseHandle$[rsp]
+; Line 330
+	xor	r9d, r9d
+	lea	r8, OFFSET $SG90720
+	lea	rdx, OFFSET $SG90721
+	xor	ecx, ecx
+	call	QWORD PTR _MessageBoxW$[rsp]
+; Line 331
 	xor	eax, eax
 $LN1@main:
-; Line 180
-	add	rsp, 624				; 00000270H
+; Line 332
+	add	rsp, 816				; 00000330H
 	pop	rdi
 	ret	0
 main	ENDP
+_TEXT	ENDS
+; Function compile flags: /Odtp
+_TEXT	SEGMENT
+i$1 = 32
+ntHeaders$ = 40
+sectionHeaders$ = 48
+dosHeader$ = 56
+exeBase$ = 80
+sectionSize$ = 88
+strncmp_func$ = 96
+?GetTextSection@@YAPEAXPEAXPEAKP6AHPEBD2_K@Z@Z PROC	; GetTextSection
+; File C:\Users\6lady\source\shel0101\shell3124\c-shellcode.cpp
+; Line 16
+$LN9:
+	mov	QWORD PTR [rsp+24], r8
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 72					; 00000048H
+; Line 21
+	mov	rax, QWORD PTR exeBase$[rsp]
+	mov	QWORD PTR dosHeader$[rsp], rax
+; Line 22
+	mov	rax, QWORD PTR dosHeader$[rsp]
+	movzx	eax, WORD PTR [rax]
+	cmp	eax, 23117				; 00005a4dH
+	je	SHORT $LN5@GetTextSec
+; Line 23
+	xor	eax, eax
+	jmp	$LN1@GetTextSec
+$LN5@GetTextSec:
+; Line 27
+	mov	rax, QWORD PTR dosHeader$[rsp]
+	movsxd	rax, DWORD PTR [rax+60]
+	mov	rcx, QWORD PTR exeBase$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	QWORD PTR ntHeaders$[rsp], rax
+; Line 28
+	mov	rax, QWORD PTR ntHeaders$[rsp]
+	cmp	DWORD PTR [rax], 17744			; 00004550H
+	je	SHORT $LN6@GetTextSec
+; Line 29
+	xor	eax, eax
+	jmp	$LN1@GetTextSec
+$LN6@GetTextSec:
+; Line 33
+	mov	rax, QWORD PTR ntHeaders$[rsp]
+	movzx	eax, WORD PTR [rax+20]
+	mov	rcx, QWORD PTR ntHeaders$[rsp]
+	lea	rax, QWORD PTR [rcx+rax+24]
+	mov	QWORD PTR sectionHeaders$[rsp], rax
+; Line 36
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN4@GetTextSec
+$LN2@GetTextSec:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN4@GetTextSec:
+	mov	rax, QWORD PTR ntHeaders$[rsp]
+	movzx	eax, WORD PTR [rax+6]
+	cmp	DWORD PTR i$1[rsp], eax
+	jge	SHORT $LN3@GetTextSec
+; Line 37
+	movsxd	rax, DWORD PTR i$1[rsp]
+	imul	rax, rax, 40				; 00000028H
+	mov	rcx, QWORD PTR sectionHeaders$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	r8d, 5
+	lea	rdx, OFFSET $SG90494
+	mov	rcx, rax
+	call	QWORD PTR strncmp_func$[rsp]
+	test	eax, eax
+	jne	SHORT $LN7@GetTextSec
+; Line 38
+	movsxd	rax, DWORD PTR i$1[rsp]
+	imul	rax, rax, 40				; 00000028H
+	mov	rcx, QWORD PTR sectionSize$[rsp]
+	mov	rdx, QWORD PTR sectionHeaders$[rsp]
+	mov	eax, DWORD PTR [rdx+rax+8]
+	mov	DWORD PTR [rcx], eax
+; Line 39
+	movsxd	rax, DWORD PTR i$1[rsp]
+	imul	rax, rax, 40				; 00000028H
+	mov	rcx, QWORD PTR sectionHeaders$[rsp]
+	mov	eax, DWORD PTR [rcx+rax+12]
+	mov	rcx, QWORD PTR exeBase$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	jmp	SHORT $LN1@GetTextSec
+$LN7@GetTextSec:
+; Line 41
+	jmp	SHORT $LN2@GetTextSec
+$LN3@GetTextSec:
+; Line 43
+	xor	eax, eax
+$LN1@GetTextSec:
+; Line 44
+	add	rsp, 72					; 00000048H
+	ret	0
+?GetTextSection@@YAPEAXPEAXPEAKP6AHPEBD2_K@Z@Z ENDP	; GetTextSection
 _TEXT	ENDS
 ; Function compile flags: /Odtp
 ;	COMDAT ?get_func_by_name@@YAPEAXPEAXPEAD@Z
