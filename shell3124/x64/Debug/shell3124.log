@@ -1,3 +1,1 @@
-﻿  c-shellcode.cpp
-main.obj : error LNK2005: ya se definió main en c-shellcode.obj
-C:\Users\6lady\source\shel0101\x64\Debug\shell3124.exe : fatal error LNK1169: se encontraron uno o más símbolos definidos simultáneamente
+﻿
